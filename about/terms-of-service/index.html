@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <link rel="icon" type="image/x-icon" href="../../images/logo_w.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星崔AI | 服務條款</title>
+    <!-- 引入 Markdown 解析器 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* --- 基礎樣式 (保留原風格) --- */
+        :root {
+            --bg-dark: #090b0c;
+            --bg-deep: #2f3559;
+            --primary: #7272b0;
+            --accent: #b7a8bd;
+            --text-light: #dcd5e5;
+            --glass: rgba(47, 53, 89, 0.25);
+            --border-soft: rgba(183, 168, 189, 0.15);
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 50%, var(--bg-deep) 0%, var(--bg-dark) 100%);
+            background-attachment: fixed;
+            color: var(--text-light);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        .shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 追尾球 */
+        #follower-ball {
+            position: fixed;
+            width: 18px;
+            height: 18px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 0 20px var(--primary);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            display: block;
+        }
+
+        header {
+            background: rgba(9, 11, 12, 0.7);
+            backdrop-filter: blur(15px);
+            height: 80px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8%;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        /* Logo 樣式 */
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo-img-box {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: transform 0.5s ease;
+        }
+
+        .logo-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-link h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #dcd5e5;
+            letter-spacing: -0.5px;
+            transition: color 0.3s ease;
+            margin: 0;
+            background: none;
+            -webkit-text-fill-color: initial;
+        }
+
+        .logo-link:hover .logo-img-box {
+            transform: scale(1.1);
+        }
+
+        .logo-link:hover h1 {
+            color: #ffffff;
+        }
+
+        /* 導覽列 */
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 14px;
+            transition: 0.4s;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+
+        nav a:hover {
+            color: #fff;
+            opacity: 1;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        #logout-btn {
+            cursor: pointer;
+            display: none;
+        }
+
+        .menu {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        /* 主內容區設定 */
+        main {
+            max-width: 900px;
+            margin: 140px auto 80px;
+            padding: 0 25px;
+            flex: 1;
+        }
+
+        /* --- Markdown 內容樣式 (新增) --- */
+        .markdown-body {
+            text-align: left;
+            background: rgba(47, 53, 89, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(114, 114, 176, 0.2);
+        }
+
+        /* 標題樣式 */
+        .markdown-body h1 {
+            font-size: 32px;
+            color: #fff;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        .markdown-body h2 {
+            font-size: 24px;
+            color: var(--text-light);
+            margin-top: 40px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        .markdown-body h3 {
+            font-size: 20px;
+            color: var(--text-light);
+            margin-top: 30px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* 內文樣式 */
+        .markdown-body p {
+            margin-bottom: 16px;
+            color: var(--text-light);
+            opacity: 0.9;
+            text-align: justify;
+        }
+
+        .markdown-body ul,
+        .markdown-body ol {
+            margin-bottom: 16px;
+            padding-left: 24px;
+            color: var(--accent);
+        }
+
+        .markdown-body li {
+            margin-bottom: 8px;
+        }
+
+        .markdown-body strong {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .markdown-body a {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .markdown-body blockquote {
+            border-left: 4px solid var(--accent);
+            padding-left: 15px;
+            color: var(--accent);
+            font-style: italic;
+            margin: 20px 0;
+        }
+
+        footer {
+            padding: 60px;
+            text-align: center;
+            font-size: 13px;
+            letter-spacing: 2px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 0 30px;
+            }
+
+            .menu {
+                display: block;
+            }
+
+            nav ul {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 100%;
+                height: 100vh;
+                background: var(--bg-dark);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+                z-index: 1000;
+            }
+
+            nav ul.show {
+                right: 0;
+            }
+
+            .markdown-body {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="follower-ball"></div>
+
+    <div class="shell">
+        <header>
+            <a href="../../" class="logo-link">
+                <div class="logo-img-box">
+                    <!-- 請確認路徑 -->
+                    <img src="../../images/logo_w.png" alt="Logo">
+                </div>
+                <h1>星崔AI</h1>
+            </a>
+
+            <button class="menu" aria-label="開啟選單">&#9776;</button>
+
+            <nav>
+                <ul id="nav-menu">
+                    <li><a href="../../download/">安裝教學</a></li>
+                    <li><a href="../../introduce/">軟體介紹</a></li>
+                    <li><a href="../">關於我們</a></li>
+                    <li id="auth-link-container"><a href="../../login" id="auth-link">登入</a></li>
+                    <li id="logout-container" style="display:none;"><a href="#" id="logout-btn">登出</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- 用來顯示轉換後的 Markdown HTML -->
+            <div id="policy-content" class="markdown-body"></div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 -
+                <script>document.write(new Date().getFullYear())</script> The Sentry AI All Rights Reserved.
+            </p>
+        </footer>
+    </div>
+
+    <!-- ★★★ 在這裡貼上您的 Markdown 內容 ★★★ -->
+    <!-- 注意：不要破壞 script 標籤，把內容貼在中間即可 -->
+    <script type="text/markdown" id="raw-markdown">
+# 服務條款
+
+**生效日期：2026 年 02 月 28 日**
+
+
+歡迎使用由 台南高商 116 資甲 林洛樊、翁毓琇、陳佳卉、曾靚文（以下簡稱「本團隊」）開發之網站與電腦程式（以下簡稱「本服務」）。在使用本服務前，請仔細閱讀本服務條款。本團隊開發「星崔AI」專案服務條款適用於所有相關服務，包含但不限於網站、電腦程式。
+
+## 1. 接受條款
+
+當您註冊、登入或開始使用本服務時，即表示您已閱讀、理解並同意受本條款之約束。如果您不同意本條款，請立即停止使用本專案相關一切服務。
+
+## 2. 服務內容
+
+本服務包含網站平台與電腦端程式，提供數據查詢、同步及儀表板監控功能。本團隊保留隨時修改、暫停或終止服務功能之權利，恕不另行通知。
+
+## 3. 使用者義務與帳號安全
+
+* 真實資料： 您同意提供正確之個人資訊（如姓名、Email）。
+* 帳號保管： 您須自行負責帳號與密碼的保密。所有使用該帳號進行的行為，均視為您的個人行為。
+* 合法使用： 您承諾不利用本服務進行任何非法、侵權、駭客攻擊或干擾系統運作之行為。
+
+## 4. 知識產權
+
+本服務所使用之軟體、程式、介面設計及文字內容，其著作權、專利權及其他相關權利均歸 本團隊 所有。未經授權，不得進行反向工程、解譯、拆解或複製。
+
+## 5. 免責聲明
+
+* 現狀提供： 本服務按「現狀」及「現有」基礎提供。本團隊不保證服務絕對不中斷、無錯誤或不具病毒風險。
+
+* 資料風險： 雖然我們使用 Firebase 與 GitHub 託管，但對於不可抗力因素（如雲端服務商故障）造成的資料遺失或損害，本團隊不負損害賠償責任。
+
+* 第三方連結： 本服務可能包含指向第三方網站的連結，本團隊對其內容或隱私政策不負責任。
+
+## 6. 服務終止
+
+若您違反本服務條款，本團隊有權隨時暫停或永久終止您的帳號使用權限，並刪除相關資料。
+
+## 7. 條款修改
+
+本團隊保留隨時修改本條款之權利，修改後將於網站公告，不另行個別通知。若您在修改後繼續使用本服務，視為接受修訂後的條款。
+
+## 8. 準據法與管轄法院
+
+本條款之解釋與適用均依中華民國法律。因本服務所生之爭議，雙方同意以台灣台南地方法院為第一審管轄法院。
+
+
+### 聯絡資訊： thesentryai@gmail.com 
+
+---
+
+[下載 PDF 檔案](./TheSentryAI_Terms-of-Service_20260228.pdf)
+
+
+
+
+    </script>
+
+    <!-- Markdown 解析與渲染腳本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rawMarkdown = document.getElementById('raw-markdown').textContent;
+            const contentDiv = document.getElementById('policy-content');
+
+            // 使用 marked.js 將 markdown 轉為 html
+            contentDiv.innerHTML = marked.parse(rawMarkdown);
+        });
+    </script>
+
+    <!-- Firebase SDK (保留導覽列狀態功能) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
+            authDomain: "workai-1d692.firebaseapp.com",
+            projectId: "workai-1d692",
+            storageBucket: "workai-1d692.firebasestorage.app",
+            messagingSenderId: "156453625217",
+            appId: "1:156453625217:web:7ef3a3642481c52449dc80"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const authLink = document.getElementById('auth-link');
+        const logoutContainer = document.getElementById('logout-container');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authLink.innerText = "儀錶板";
+                authLink.href = "../../dashboard/";
+                logoutContainer.style.display = "block";
+            } else {
+                authLink.innerText = "登入";
+                authLink.href = "../../login";
+                logoutContainer.style.display = "none";
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => { window.location.reload(); });
+        });
+    </script>
+
+    <!-- UI 互動腳本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.querySelector('.menu');
+            const navMenu = document.getElementById('nav-menu');
+
+            if (menuBtn && navMenu) {
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (e) => {
+                    if (navMenu.classList.contains('show') && !navMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                        navMenu.classList.remove('show');
+                    }
+                });
+            }
+
+            const ball = document.getElementById('follower-ball');
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let ballX = mouseX, ballY = mouseY;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX; mouseY = e.clientY;
+            });
+
+            function animateBall() {
+                ballX += (mouseX - ballX) * 0.1;
+                ballY += (mouseY - ballY) * 0.1;
+                ball.style.transform = `translate(${ballX - 9}px, ${ballY - 9}px)`;
+                requestAnimationFrame(animateBall);
+            }
+            animateBall();
+        });
+    </script>
+</body>
+
+</html>

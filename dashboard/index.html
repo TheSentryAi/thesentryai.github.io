@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <link rel="icon" type="image/x-icon" href="../images/logo_w.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星崔AI - 用戶資料</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #090b0c;
+            --color-primary: #2f3559;
+            --color-secondary: #7272b0;
+            --color-accent: #b7a8bd;
+            --color-light: #dcd5e5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* 自定義滾動條 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-secondary);
+        }
+
+        /* 下拉選單動畫 */
+        .dropdown {
+            position: relative;
+            padding-bottom: 12px;
+            margin-bottom: -12px;
+        }
+
+        .dropdown-menu {
+            display: block;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            background-color: var(--color-primary);
+            border: 1px solid var(--color-secondary);
+            z-index: 60;
+        }
+
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 25px;
+            background: transparent;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 絲滑轉場核心 CSS */
+        .content-view {
+            transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(20px);
+            opacity: 0;
+            display: none;
+        }
+
+        .content-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .content-view.leaving {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.98);
+        }
+
+        /* 側邊欄 */
+        .sidebar {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-100%);
+            z-index: 100;
+            background-color: var(--color-primary);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 80%;
+            max-width: 300px;
+            box-shadow: 10px 0 25px rgba(0, 0, 0, 0.8);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .glass-card {
+            background: rgba(47, 53, 89, 0.2);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(114, 114, 176, 0.2);
+        }
+
+        .button-click-effect:active {
+            transform: scale(0.95);
+        }
+
+        .nav-btn {
+            color: var(--color-light);
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--color-secondary);
+            color: white;
+        }
+
+        .active-tab-border {
+            border-bottom: 2px solid var(--color-accent);
+            color: var(--color-accent) !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 側邊欄 (移動端) -->
+    <div id="sidebar" class="sidebar flex flex-col p-6">
+        <div class="flex items-center justify-between mb-8">
+            <span class="text-2xl font-bold tracking-wider text-[#dcd5e5]">星崔AI</span>
+            <button onclick="document.getElementById('sidebar').classList.remove('active')" class="text-[#b7a8bd]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <nav id="mobile-nav-content" class="flex flex-col space-y-2">
+            <!-- 由 JS 生成 -->
+        </nav>
+    </div>
+
+    <!-- 頂部導航 -->
+    <header class="bg-[#090b0c]/90 backdrop-blur-md border-b border-[#2f3559] sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
+
+            <div class="flex items-center">
+                <button id="hamburger-btn" class="text-[#dcd5e5] mr-4 lg:hidden button-click-effect">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <a href="../">
+                    <div class="flex items-center space-x-4 cursor-pointer group"
+                        onclick="navigate('dashboard', 'home')">
+                        <!-- Logo 已放大 -->
+                        <div
+                            class="relative overflow-hidden rounded-xl shadow-lg w-14 h-14 transition-transform group-hover:scale-110 duration-500">
+                            <img src="../images/logo_w.png" alt="Logo" class="w-full h-full object-cover">
+                        </div>
+                        <h1
+                            class="text-2xl font-bold text-[#dcd5e5] tracking-tight group-hover:text-white transition-colors">
+                            星崔AI</h1>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="hidden lg:flex items-center space-x-2">
+                <div class="dropdown">
+                    <button class="nav-btn px-4 py-2 rounded-xl font-medium flex items-center button-click-effect">
+                        帳號管理
+                        <svg class="ml-1.5 w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu absolute left-0 mt-2 w-52 rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="py-1">
+                            <a href="#" data-tab="settings"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">設定中心</a>
+                            <a href="#" data-tab="account"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">個人帳號</a>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="navigate('tutorial-page', 'tutorial')"
+                    class="nav-btn px-4 py-2 rounded-xl font-medium button-click-effect">使用教學</button>
+                <button onclick="navigate('dashboard', 'data')"
+                    class="nav-btn px-4 py-2 rounded-xl font-medium button-click-effect">我的數據</button>
+
+                <div class="dropdown">
+                    <button class="nav-btn px-4 py-2 rounded-xl font-medium flex items-center button-click-effect">
+                        技術服務
+                        <svg class="ml-1.5 w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu absolute left-0 mt-2 w-52 rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="py-1">
+                            <a href="../download/" data-tab="download"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">下載安裝檔</a>
+                            <a href="#" data-tab="productStatement"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">產品聲明</a>
+                            <a href="#" data-tab="reportIssue"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">回報問題</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-8 w-[1px] bg-[#2f3559] mx-4"></div>
+
+                <div class="dropdown">
+                    <button
+                        class="flex items-center space-x-2 bg-[#2f3559] hover:bg-[#7272b0] px-5 py-2.5 rounded-full border border-[#7272b0]/40 transition button-click-effect">
+                        <div class="w-2.5 h-2.5 bg-[#86C166] rounded-full animate-pulse shadow-[0_0_8px_#b7a8bd]"></div>
+                        <span class="text-sm font-bold text-[#dcd5e5]">線上中</span>
+                    </button>
+                    <div class="dropdown-menu absolute right-0 mt-2 w-52 rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="px-5 py-4 border-b border-[#7272b0]/20 bg-[#090b0c]/30">
+                            <p class="text-[10px] text-[#b7a8bd] uppercase font-bold tracking-widest mb-1">當前用戶</p>
+                            <p id="menu-nickname" class="text-sm font-bold text-[#dcd5e5] truncate">載入中...</p>
+                        </div>
+                        <div class="py-1">
+                            <button id="logout-btn-nav"
+                                class="w-full text-left px-5 py-3 text-sm text-[#dcd5e5] hover:bg-[#2f3559] transition flex items-center group">
+                                登出系統
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main id="main-content" class="p-6 sm:p-10 flex-grow relative">
+        <!-- Dashboard -->
+        <div id="view-dashboard"
+            class="content-view active glass-card p-10 rounded-[2.5rem] max-w-6xl mx-auto shadow-2xl">
+            <h2 class="text-4xl font-black text-[#dcd5e5] mb-2 tracking-tight">歡迎回來</h2>
+            <p class="text-[#b7a8bd] mb-10 text-lg">系統運作正常，隨時準備協助您的 AI 任務。</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-[#2f3559]/40 p-8 rounded-3xl border border-[#7272b0]/30 shadow-xl">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <h3 class="font-black text-xl text-[#dcd5e5]">系統狀態</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 bg-[#090b0c]/40 rounded-xl">
+                            <span class="text-[#b7a8bd] font-medium">資料庫連線</span>
+                            <span id="auth-status" class="text-[#dcd5e5] font-black tracking-wide">連線中...</span>
+                        </div>
+                        <div class="flex flex-col p-3 bg-[#090b0c]/40 rounded-xl">
+                            <span class="text-[#b7a8bd] text-xs font-bold mb-1 uppercase tracking-widest">用戶識別碼</span>
+                            <span id="user-info" class="text-[#7272b0] truncate font-mono text-sm">載入中...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#2f3559]/40 p-8 rounded-3xl border border-[#7272b0]/30 shadow-xl">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <h3 class="font-black text-xl text-[#dcd5e5]">帳號概覽</h3>
+                    </div>
+                    <p id="nickname-display" class="text-3xl font-black text-[#dcd5e5] mb-6">載入中...</p>
+                    <button onclick="navigate('profile-tutorial', 'account')"
+                        class="w-full py-4 bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] rounded-2xl font-black transition-all shadow-lg flex items-center justify-center space-x-2 button-click-effect">
+                        <span>編輯個人資料</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 教學頁面 -->
+        <div id="view-tutorial-page" class="content-view glass-card p-10 rounded-[2.5rem] max-w-4xl mx-auto shadow-2xl">
+            <h2 class="text-3xl font-black text-[#dcd5e5] mb-8 border-b border-[#2f3559] pb-6">星崔AI 使用指南</h2>
+            <div class="bg-[#2f3559]/30 p-8 rounded-3xl border border-[#7272b0]/20">
+                <h3 class="text-2xl font-black text-[#b7a8bd] mb-4">快速入門</h3>
+                <p class="text-[#dcd5e5]/80 mb-8 leading-relaxed text-lg">歡迎使用星崔AI。我們致力於提供最直覺、最高效的 AI 協作體驗。</p>
+                <button
+                    class="bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] px-10 py-4 rounded-2xl font-black transition text-lg button-click-effect">開始觀看教學</button>
+            </div>
+        </div>
+
+        <!-- 帳號與設定頁面 -->
+        <div id="view-profile-tutorial"
+            class="content-view glass-card p-10 rounded-[2.5rem] max-w-6xl mx-auto shadow-2xl">
+            <div id="profile-greeting-container" class="mb-10">
+                <h2 class="text-4xl font-black text-[#dcd5e5] mb-2">載入中...</h2>
+            </div>
+            <div id="profile-nav-tabs" class="flex flex-wrap space-x-2 mb-10 border-b border-[#2f3559]"></div>
+            <div id="profile-tutorial-content"
+                class="bg-[#090b0c]/40 p-10 rounded-3xl border border-[#2f3559] min-h-[400px]"></div>
+        </div>
+    </main>
+    <!-- 憑證逾期/未登入 警告視窗 (預設隱藏) -->
+    <div id="login-alert-modal"
+        class="fixed inset-0 z-[999] flex items-center justify-center bg-[#090b0c]/90 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
+        <div id="login-alert-card"
+            class="bg-[#2f3559]/60 border border-[#7272b0]/50 p-8 rounded-[2rem] shadow-[0_0_60px_rgba(0,0,0,0.8)] max-w-sm w-[90%] transform scale-95 transition-transform duration-500 backdrop-filter backdrop-blur-xl relative overflow-hidden">
+
+            <!-- 裝飾用光暈 -->
+            <div
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-[#b7a8bd] shadow-[0_0_20px_#b7a8bd] rounded-b-full opacity-80">
+            </div>
+
+            <!-- Icon -->
+            <div
+                class="w-20 h-20 bg-[#090b0c]/60 rounded-full flex items-center justify-center mb-6 mx-auto border border-[#7272b0]/30 shadow-inner">
+                <svg class="w-10 h-10 text-[#dcd5e5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                    </path>
+                </svg>
+            </div>
+
+            <h3 class="text-2xl font-black text-[#dcd5e5] text-center mb-2 tracking-wide">系統警示</h3>
+            <p class="text-[#b7a8bd] text-center mb-8 font-medium leading-relaxed">
+                您的安全憑證已逾期或失效。<br>為確保數據安全，請重新驗證。
+            </p>
+
+            <button id="modal-login-btn"
+                class="w-full py-4 bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] rounded-2xl font-black transition-all shadow-lg hover:shadow-[#b7a8bd]/20 active:scale-95 tracking-widest text-lg">
+                重新登入
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        // 1. 整合 indexuse.html 的資料庫架構
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase 配置 (來自 indexuse.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
+            authDomain: "workai-1d692.firebaseapp.com",
+            projectId: "workai-1d692",
+            storageBucket: "workai-1d692.firebasestorage.app",
+            messagingSenderId: "156453625217",
+            appId: "1:156453625217:web:f04e2da964ddb6d449dc80"
+        };
+        const appId = firebaseConfig.projectId;
+
+        let db, auth;
+        let userId = 'loading';
+        let currentView = 'dashboard';
+        let currentTab = 'settings';
+        let currentNickname = '載入中...';
+        let isLoggingOut = false;
+        let isTransitioning = false;
+
+        const navTabs = {
+            'settings': { title: '設定中心', content: '在此調整您的介面顯示偏好與隱私選項。' },
+            'account': { title: '個人帳號', content: '管理您的登入資訊與暱稱設定。' },
+            'productStatement': { title: '產品聲明', content: '閱讀星崔AI 的官方聲明與服務準則。' },
+            'reportIssue': { title: '回報問題', content: '若遇到任何困難，請隨時通知我們。' }
+        };
+
+        function showLoginAlert() {
+            const modal = document.getElementById('login-alert-modal');
+            const card = document.getElementById('login-alert-card');
+            const btn = document.getElementById('modal-login-btn');
+
+            // 1. 顯示視窗 (CSS class 切換)
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-95');
+            card.classList.add('scale-100');
+
+            // 2. 綁定按鈕點擊事件
+            btn.onclick = () => {
+                // 按下按鈕的動畫
+                btn.innerHTML = `<span class="animate-pulse">轉跳中...</span>`;
+                setTimeout(() => {
+                    window.location.href = '../login/'; // 轉跳到登入頁
+                }, 500);
+            };
+        }
+
+        // 2. 初始化與 Auth 邏輯
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById('auth-status').textContent = '已連線';
+                    document.getElementById('user-info').textContent = userId;
+                    setupNicknameListener(userId);
+                    handleInitialNavigation();
+                } else {
+                    if (!isLoggingOut) {
+                        showLoginAlert();
+                    }
+                }
+            });
+        } catch (error) {
+            console.error("Firebase Init Error:", error);
+        }
+
+        // 3. 暱稱監聽器
+        function setupNicknameListener(uid) {
+            const docRef = doc(db, `artifacts/${appId}/users/${uid}/profileData/mainProfile`);
+            onSnapshot(docRef, (snap) => {
+                currentNickname = snap.exists() ? (snap.data().nickname || '新夥伴') : '新夥伴';
+
+                // 更新 UI
+                document.getElementById('nickname-display').textContent = currentNickname;
+                document.getElementById('menu-nickname').textContent = currentNickname;
+
+                if (currentView === 'profile-tutorial') {
+                    renderProfileGreeting();
+                    renderProfileTutorialContent();
+                }
+            });
+        }
+
+        // 4. 核心導航與絲滑轉場函數
+        window.navigate = function (targetView, tabKey) {
+            if (isTransitioning) return;
+
+            let nextView = targetView;
+            // 處理特殊按鈕目標
+            if (tabKey === 'home' || tabKey === 'data') nextView = 'dashboard';
+
+            // 如果目標與當前相同，則不執行（除非是 profile-tutorial 的分頁切換）
+            if (nextView === currentView && (nextView !== 'profile-tutorial' || tabKey === currentTab)) return;
+
+            isTransitioning = true;
+            const oldEl = document.getElementById(`view-${currentView}`);
+
+            // 退場動畫
+            oldEl.classList.add('leaving');
+
+            setTimeout(() => {
+                oldEl.classList.remove('active', 'leaving');
+
+                // 更新當前狀態
+                currentView = nextView;
+                if (targetView === 'profile-tutorial') currentTab = tabKey;
+
+                const newEl = document.getElementById(`view-${currentView}`);
+
+                // 如果是個人資料頁面，先渲染內容
+                if (currentView === 'profile-tutorial') {
+                    renderProfileGreeting();
+                    renderProfileTutorialContent();
+                }
+
+                // 進場動畫
+                newEl.classList.add('active');
+
+                // 強制重繪
+                void newEl.offsetWidth;
+
+                isTransitioning = false;
+                // 更新 URL Hash
+                window.location.hash = (currentView === 'profile-tutorial') ? `#${currentView}:${currentTab}` : `#${currentView}`;
+            }, 350);
+
+            // 關閉移動端側邊欄
+            document.getElementById('sidebar').classList.remove('active');
+        };
+
+        // 5. 渲染函數
+        function renderProfileGreeting() {
+            const container = document.getElementById('profile-greeting-container');
+            if (!container) return;
+            container.innerHTML = `
+                <h2 class="text-4xl font-black text-[#dcd5e5] mb-2 tracking-tight">您好，${currentNickname}</h2>
+                <p class="text-[#7272b0] font-bold uppercase tracking-widest text-sm">${navTabs[currentTab].title}</p>
+            `;
+        }
+
+        function renderProfileTutorialContent() {
+            const nav = document.getElementById('profile-nav-tabs');
+            const content = document.getElementById('profile-tutorial-content');
+            if (!nav || !content) return;
+
+            nav.innerHTML = '';
+            Object.keys(navTabs).forEach(key => {
+                const btn = document.createElement('button');
+                btn.className = `px-6 py-4 font-black transition-all ${currentTab === key ? 'active-tab-border text-[#b7a8bd]' : 'text-[#2f3559] hover:text-[#7272b0]'}`;
+                btn.textContent = navTabs[key].title;
+                btn.onclick = () => {
+                    if (currentTab === key) return;
+                    currentTab = key;
+                    content.style.opacity = '0';
+                    setTimeout(() => {
+                        renderProfileTutorialContent();
+                        renderProfileGreeting();
+                        content.style.opacity = '1';
+                    }, 200);
+                };
+                nav.appendChild(btn);
+            });
+
+            if (currentTab === 'account') {
+                content.innerHTML = `
+                    <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <section class="flex items-center justify-between p-8 bg-[#2f3559]/20 rounded-3xl border border-[#7272b0]/20">
+                            <div>
+                                <p class="text-[10px] text-[#b7a8bd] uppercase tracking-widest font-black mb-1">您的顯示暱稱</p>
+                                <p class="text-3xl font-black text-[#dcd5e5]">${currentNickname}</p>
+                            </div>
+                            <button onclick="handleNicknameEdit()" class="bg-[#7272b0] p-4 rounded-2xl hover:bg-[#b7a8bd] transition shadow-lg text-[#090b0c] button-click-effect font-bold">修改</button>
+                        </section>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <h4 class="text-2xl font-black text-[#dcd5e5] mb-4">${navTabs[currentTab].title}</h4>
+                        <p class="text-[#b7a8bd] leading-relaxed text-lg">${navTabs[currentTab].content}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // 6. 資料交互
+        window.handleNicknameEdit = async () => {
+            const name = prompt("請輸入您的新暱稱：", currentNickname);
+            if (name && name.trim() !== "" && name !== currentNickname) {
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/profileData/mainProfile`);
+                try {
+                    await setDoc(docRef, { nickname: name.trim() }, { merge: true });
+                } catch (e) { alert("更新失敗: " + e.message); }
+            }
+        };
+
+        // 7. 登出
+        document.getElementById('logout-btn-nav').onclick = async () => {
+            isLoggingOut = true;
+            await signOut(auth);
+            window.location.href = '../';
+        };
+
+        // 8. 網址導航初始化
+        function handleInitialNavigation() {
+            const h = window.location.hash.slice(1);
+            if (h.startsWith('profile-tutorial:')) {
+                currentView = 'profile-tutorial';
+                currentTab = h.split(':')[1];
+            } else if (h === 'tutorial-page') {
+                currentView = 'tutorial-page';
+            }
+
+            document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(`view-${currentView}`).classList.add('active');
+            if (currentView === 'profile-tutorial') { renderProfileGreeting(); renderProfileTutorialContent(); }
+        }
+
+        // 9. UI 事件綁定
+        document.getElementById('hamburger-btn').onclick = () => document.getElementById('sidebar').classList.add('active');
+
+        document.querySelectorAll('.dropdown-menu a').forEach(a => {
+            a.onclick = (e) => {
+                // 取得 href 屬性
+                const href = a.getAttribute('href');
+
+                // 如果 href 存在且不是 '#' (代表是真實連結，例如 ../download/)
+                // 就直接 return，讓瀏覽器正常跳轉，不要執行下面的程式碼
+                if (href && href !== '#') {
+                    return;
+                }
+
+                // 如果是 '#'，才執行內部頁面切換
+                e.preventDefault();
+                navigate('profile-tutorial', a.dataset.tab);
+            };
+        });
+
+        // 10. 頁面初始化
+        window.onload = () => {
+            const container = document.getElementById('mobile-nav-content');
+            const items = [
+                { title: '數據總覽', t: 'dashboard', k: 'data' },
+                { title: '教學中心', t: 'tutorial-page', k: 'tutorial' },
+                { title: '個人設定', t: 'profile-tutorial', k: 'settings' },
+                { title: '登出系統', t: '', k: 'logout', logout: true }
+            ];
+
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-5 rounded-2xl font-black transition ${item.logout ? 'text-red-400 bg-red-400/10 mt-6' : 'text-[#dcd5e5] hover:bg-[#7272b0]'}`;
+                btn.textContent = item.title;
+                btn.onclick = () => {
+                    if (item.logout) document.getElementById('logout-btn-nav').click();
+                    else navigate(item.t, item.k);
+                };
+                container.appendChild(btn);
+            });
+            handleInitialNavigation();
+        };
+    </script>
+</body>
+
+</html>

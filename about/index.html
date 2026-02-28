@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星崔AI | 關於我們</title>
+    <style>
+        /* --- 基礎樣式 (維持不變) --- */
+        :root {
+            --bg-dark: #090b0c;
+            --bg-deep: #2f3559;
+            --primary: #7272b0;
+            --accent: #b7a8bd;
+            --text-light: #dcd5e5;
+            --glass: rgba(47, 53, 89, 0.25);
+            --border-soft: rgba(183, 168, 189, 0.15);
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 50%, var(--bg-deep) 0%, var(--bg-dark) 100%);
+            background-attachment: fixed;
+            color: var(--text-light);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        .shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 追尾球 */
+        #follower-ball {
+            position: fixed;
+            width: 18px;
+            height: 18px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 0 20px var(--primary);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            display: block;
+        }
+
+        header {
+            background: rgba(9, 11, 12, 0.7);
+            backdrop-filter: blur(15px);
+            height: 80px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8%;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        /* Logo & Nav (維持不變) */
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo-img-box {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: transform 0.5s ease;
+        }
+
+        .logo-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .logo-link h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #dcd5e5;
+            letter-spacing: -0.5px;
+            transition: color 0.3s ease;
+            margin: 0;
+            background: none;
+            -webkit-text-fill-color: initial;
+        }
+
+        .logo-link:hover .logo-img-box {
+            transform: scale(1.1);
+        }
+
+        .logo-link:hover h1 {
+            color: #ffffff;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 14px;
+            transition: 0.4s;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+
+        nav a:hover {
+            color: #fff;
+            opacity: 1;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        #logout-btn {
+            cursor: pointer;
+            display: none;
+        }
+
+        .menu {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        /* 主內容區設定 */
+        main {
+            max-width: 1000px;
+            margin: 120px auto 80px;
+            padding: 0 25px;
+            flex: 1;
+        }
+
+        /* --- 關於我們專屬樣式 --- */
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* 資訊卡片 (專題資訊/網站資訊) */
+        .info-card {
+            background: rgba(47, 53, 89, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(114, 114, 176, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .info-item h3 {
+            color: var(--accent);
+            font-size: 16px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-item p {
+            font-size: 18px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* 組員介紹網格 */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* 一列兩個 */
+            gap: 30px;
+        }
+
+        /* 組員卡片 */
+        .member-card {
+            background: linear-gradient(145deg, rgba(47, 53, 89, 0.4), rgba(9, 11, 12, 0.6));
+            border: 1px solid var(--border-soft);
+            border-radius: 24px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(114, 114, 176, 0.25);
+            border-color: var(--primary);
+        }
+
+        /* 組員照片 (圓形/圓角) */
+        .member-avatar {
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            background: #1a1a2e;
+            /* 圖片載入前的底色 */
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 組員文字資訊 */
+        .member-info h3 {
+            font-size: 22px;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .member-role {
+            display: inline-block;
+            font-size: 12px;
+            background: var(--primary);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .member-desc {
+            font-size: 14px;
+            color: var(--accent);
+            line-height: 1.6;
+        }
+
+        footer {
+            padding: 60px;
+            text-align: center;
+            font-size: 13px;
+            letter-spacing: 2px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 0 30px;
+            }
+
+            .menu {
+                display: block;
+            }
+
+            nav ul {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 100%;
+                height: 100vh;
+                background: var(--bg-dark);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+                z-index: 1000;
+            }
+
+            nav ul.show {
+                right: 0;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+                /* 手機版改為單欄 */
+            }
+
+            .member-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .group-photo-box {
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            /* 確保圖片不超出圓角 */
+            border: 1px solid rgba(114, 114, 176, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            margin-bottom: 60px;
+            /* 與下方標題保持距離 */
+            background: rgba(47, 53, 89, 0.2);
+            /* 載入前的背景色 */
+            position: relative;
+        }
+
+        .group-photo-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+            /* 消除圖片底部空隙 */
+            transition: transform 0.6s ease;
+        }
+
+        /* 滑鼠懸停時微幅放大特效 */
+        .group-photo-box:hover img {
+            transform: scale(1.03);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="follower-ball"></div>
+
+    <div class="shell">
+        <header>
+            <a href="../" class="logo-link">
+                <div class="logo-img-box">
+                    <img src="../images/logo_w.png" alt="Logo">
+                </div>
+                <h1>星崔AI</h1>
+            </a>
+
+            <button class="menu" aria-label="開啟選單">&#9776;</button>
+
+            <nav>
+                <ul id="nav-menu">
+                    <!-- 導覽列連結 -->
+                    <li><a href="../download/">安裝教學</a></li>
+                    <li><a href="../introduce/">軟體介紹</a></li>
+                    <li><a href="./" style="color:#fff; opacity:1;">關於我們</a></li>
+                    <li id="auth-link-container"><a href="../login/" id="auth-link">登入</a></li>
+                    <li id="logout-container" style="display:none;"><a href="#" id="logout-btn">登出</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- 區塊 1: 專題與網站資訊 -->
+            <h2 class="section-title">專題資訊</h2>
+            <div class="info-card">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h3>School / Department</h3>
+                        <p>國立臺南高級商業職業學校 / 資料處理科</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Project Name</h3>
+                        <p>智慧姿勢矯正與專注力輔助系統</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Advisor</h3>
+                        <p>陳銘平 老師<br>葉杰士 老師</p>
+                    </div>
+                    <div class="info-item">
+                        <h3>Duration</h3>
+                        <p>2025.09 - 2026.06</p>
+                    </div>
+                </div>
+                <hr style="border:0; border-top:1px solid var(--border-soft); margin: 30px 0;">
+                <div class="info-item">
+                    <h3>About The Project</h3>
+                    <p style="font-size: 16px; font-weight: normal; color: var(--text-light); line-height: 1.8;">
+                        我們使用了由 Google 開發的 MediaPipe 技術偵測人體坐姿，並提供兩種不同的拍攝角度偵測不一樣的坐姿問題。將過程紀錄並計算CVA、Shoulder Tilt以及我們創立的 CPH
+                        三個指標，在偵測過程及結算後都給予明確的改善方向。<br>另外也準備長時間的總紀錄讓使用者可以觀察自己是否有逐漸改善或是需要調整。使用者可以透過網頁端、電腦端程式即時查看所有紀錄，我們希望可以透過這個軟體讓大眾能有效調整坐姿以提升專注行事的品質。
+                    </p>
+                </div>
+            </div>
+
+
+
+
+            <!-- 區塊 2: 團隊成員 (四人) -->
+            <h2 class="section-title">團隊成員</h2>
+            <div class="group-photo-box">
+                <!-- 請將下方的 src 修改為您實際的合照路徑，例如 ../images/team_group.jpg -->
+                <img src="../images/TEST.jpg" alt="團隊合照"
+                    onerror="this.src='https://png.pngtree.com/png-vector/20220704/ourmid/pngtree-wait-icon-design-vector-png-image_5602801.png'">
+            </div>
+            <div class="team-grid" style="margin-bottom:50px">
+
+                <!-- 組員 1 -->
+                <div class="member-card">
+                    <div class="member-avatar">
+                        <img src="../images/user_placeholder.png" alt="Member 1"
+                            onerror="this.src='https://png.pngtree.com/png-vector/20220704/ourmid/pngtree-wait-icon-design-vector-png-image_5602801.png'">
+                    </div>
+                    <div class="member-info">
+                        <h3>林洛樊 / Casper Lin</h3>
+                        <span class="member-role">全端開發 / 圖文</span>
+                        <p class="member-desc">負責電腦端製作、網頁端協作</p>
+                    </div>
+                </div>
+
+                <!-- 組員 2 -->
+                <div class="member-card">
+                    <div class="member-avatar">
+                        <img src="../images/user_placeholder.png" alt="Member 2"
+                            onerror="this.src='https://png.pngtree.com/png-vector/20220704/ourmid/pngtree-wait-icon-design-vector-png-image_5602801.png'">
+                    </div>
+                    <div class="member-info">
+                        <h3>翁毓琇 / </h3>
+                        <span class="member-role">組長 / 企劃</span>
+                        <p class="member-desc">負責團隊整合、文案編撰製作</p>
+                    </div>
+                </div>
+
+                <!-- 組員 3 -->
+                <div class="member-card">
+                    <div class="member-avatar">
+                        <img src="../images/user_placeholder.png" alt="Member 3"
+                            onerror="this.src='https://png.pngtree.com/png-vector/20220704/ourmid/pngtree-wait-icon-design-vector-png-image_5602801.png'">
+                    </div>
+                    <div class="member-info">
+                        <h3>陳佳卉 / </h3>
+                        <span class="member-role">網頁製作 / 資料庫</span>
+                        <p class="member-desc">負責網站主要製作、資料庫連線整合</p>
+                    </div>
+                </div>
+
+                <!-- 組員 4 -->
+                <div class="member-card">
+                    <div class="member-avatar">
+                        <img src="../images/user_placeholder.png" alt="Member 4"
+                            onerror="this.src='https://png.pngtree.com/png-vector/20220704/ourmid/pngtree-wait-icon-design-vector-png-image_5602801.png'">
+                    </div>
+                    <div class="member-info">
+                        <h3>曾靚文 / </h3>
+                        <span class="member-role">網頁製作 / 企劃</span>
+                        <p class="member-desc">負責網頁設計製作、專案規劃</p>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+            <h3 style="text-align: center;">當您使用「星崔AI」提供的一切服務（包含但不限於網頁、電腦程式）代表您同意遵守我們的 <a href="./terms-of-service/"
+                    style="color: inherit;">服務條款</a></h3>
+
+
+        </main>
+
+        <footer>
+            <p>&copy; 2026 -
+                <script>document.write(new Date().getFullYear())</script> The Sentry AI All Rights Reserved.
+            </p>
+        </footer>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
+            authDomain: "workai-1d692.firebaseapp.com",
+            projectId: "workai-1d692",
+            storageBucket: "workai-1d692.firebasestorage.app",
+            messagingSenderId: "156453625217",
+            appId: "1:156453625217:web:7ef3a3642481c52449dc80"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const authLink = document.getElementById('auth-link');
+        const logoutContainer = document.getElementById('logout-container');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authLink.innerText = "儀錶板";
+                authLink.href = "../dashboard/";
+                logoutContainer.style.display = "block";
+            } else {
+                authLink.innerText = "登入";
+                authLink.href = "../login/";
+                logoutContainer.style.display = "none";
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => { window.location.reload(); });
+        });
+    </script>
+
+    <!-- UI Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.querySelector('.menu');
+            const navMenu = document.getElementById('nav-menu');
+
+            if (menuBtn && navMenu) {
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (e) => {
+                    if (navMenu.classList.contains('show') && !navMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                        navMenu.classList.remove('show');
+                    }
+                });
+            }
+
+            const ball = document.getElementById('follower-ball');
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let ballX = mouseX, ballY = mouseY;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX; mouseY = e.clientY;
+            });
+
+            function animateBall() {
+                ballX += (mouseX - ballX) * 0.1;
+                ballY += (mouseY - ballY) * 0.1;
+                ball.style.transform = `translate(${ballX - 9}px, ${ballY - 9}px)`;
+                requestAnimationFrame(animateBall);
+            }
+            animateBall();
+        });
+    </script>
+</body>
+
+</html>
