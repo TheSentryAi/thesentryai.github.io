@@ -2,6 +2,13 @@
     {
         "date": "2026-03-01",
         "project": "web",
+        "type": "fix",
+        "title": "儀錶板用戶數據錯誤說明",
+        "content": "我們目前發現儀表板的用戶數據有無法載入的問題出現，正在解決中。"
+    },
+    {
+        "date": "2026-03-01",
+        "project": "web",
         "type": "release",
         "current": true,
         "title": "更新日誌(/log)頁面上線",
