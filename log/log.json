@@ -1,0 +1,25 @@
+[
+    {
+        "date": "2026-03-01",
+        "project": "web",
+        "type": "release",
+        "current": true,
+        "title": "更新日誌(/log)頁面上線",
+        "content": "更新紀錄頁面上線，供用戶直接在網站了解版本更新狀況。 \n 全站頁首同步更新。"
+    },
+    {
+        "date": "2025-02-28",
+        "project": "desktop",
+        "type": "release",
+        "current": true,
+        "title": "桌面端測試版 Beta 0.3.1 上架",
+        "content": "擁有完善功能的星崔AI終於上架，目前僅提供測試版，安裝時需使用授權密碼。"
+    },
+    {
+        "date": "2025-02-28",
+        "project": "web",
+        "type": "release",
+        "title": "星崔 AI 網頁端上線",
+        "content": "全新網站 https://thesentryai.github.io 上線，舊有 https://casperlin100w.github.io/sentery 內容下架，將自動轉跳至新站。"
+    }
+]

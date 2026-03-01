@@ -2,19 +2,20 @@
 <html lang="zh-TW">
 
 <head>
+    <link rel="icon" type="image/x-icon" href="../images/logo_w.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>星崔AI | 智慧姿勢矯正專家</title>
+    <title>星崔AI | 更新日誌</title>
     <style>
-        /* 定義配色變數 */
         :root {
             --bg-dark: #090b0c;
             --bg-deep: #2f3559;
             --primary: #7272b0;
             --accent: #b7a8bd;
             --text-light: #dcd5e5;
-            --glass: rgba(47, 53, 89, 0.25);
             --border-soft: rgba(183, 168, 189, 0.15);
+            --sakura: #E87A90;
+            /* 當前版本專屬顏色 */
         }
 
         * {
@@ -33,13 +34,7 @@
             overflow-x: hidden;
         }
 
-        .shell {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 追尾球：固定大小 */
+        /* --- 絲滑鼠標球 CSS --- */
         #follower-ball {
             position: fixed;
             width: 18px;
@@ -48,13 +43,17 @@
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
+            /* 僅對透明度做過渡，位移交給 JS 處理才不會抖動 */
             transition: opacity 0.3s ease;
             box-shadow: 0 0 20px var(--primary);
             opacity: 0.5;
             mix-blend-mode: screen;
-            display: block;
+            will-change: transform;
+            left: 0;
+            top: 0;
         }
 
+        /* Header 導覽列 */
         header {
             background: rgba(9, 11, 12, 0.7);
             backdrop-filter: blur(15px);
@@ -75,56 +74,27 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            /* 對應 space-x-4 */
             text-decoration: none;
-            cursor: pointer;
         }
 
         .logo-img-box {
-            position: relative;
             width: 56px;
-            /* 對應 w-14 */
             height: 56px;
-            /* 對應 h-14 */
             border-radius: 12px;
-            /* 對應 rounded-xl */
             overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            /* 對應 shadow-lg */
-            transition: transform 0.5s ease;
+            transition: 0.5s ease;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .logo-img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .logo-link:hover .logo-img-box {
+            transform: scale(1.1);
         }
 
         .logo-link h1 {
             font-size: 24px;
-            /* 對應 text-2xl */
             font-weight: 700;
             color: #dcd5e5;
-            /* 對應 text-[#dcd5e5] */
             letter-spacing: -0.5px;
-            /* 對應 tracking-tight */
-            transition: color 0.3s ease;
-            margin: 0;
-            /* 覆蓋掉原本首頁舊有的漸層文字設定 */
-            background: none;
-            -webkit-text-fill-color: initial;
-            -webkit-background-clip: initial;
-        }
-
-        /* 滑鼠懸停效果 (Group Hover) */
-        .logo-link:hover .logo-img-box {
-            transform: scale(1.1);
-            /* 圖片放大 */
-        }
-
-        .logo-link:hover h1 {
-            color: #ffffff;
-            /* 文字變白 */
         }
 
         nav ul {
@@ -136,138 +106,158 @@
         nav a {
             color: var(--text-light);
             text-decoration: none;
-            font-weight: 400;
             font-size: 14px;
-            transition: 0.4s;
             opacity: 0.7;
+            transition: 0.4s;
             letter-spacing: 1px;
         }
 
         nav a:hover {
-            color: #fff;
             opacity: 1;
             text-shadow: 0 0 10px var(--primary);
         }
 
-        /* 登出按鈕樣式 */
-        #logout-btn {
-            cursor: pointer;
-            display: none;
-            /* 預設隱藏 */
-        }
-
-        .menu {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--text-light);
-            font-size: 28px;
-            cursor: pointer;
-            z-index: 1001;
-        }
-
         main {
-            max-width: 900px;
-            margin: 120px auto 80px;
+            max-width: 800px;
+            margin: 140px auto 80px;
             padding: 0 25px;
             flex: 1;
         }
 
-        section {
-            margin-bottom: 80px;
-            padding: 20px 0;
-            background: transparent;
-            border: none;
+        /* --- Log 列表樣式 --- */
+        .log-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        h2 {
-            font-size: 32px;
-            margin-bottom: 25px;
-            color: #fff;
-            font-weight: 600;
-            letter-spacing: 1px;
+        .log-item {
+            background: rgba(47, 53, 89, 0.2);
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: 0.3s;
+            cursor: pointer;
         }
 
-        p {
-            font-size: 18px;
-            margin-bottom: 20px;
-            opacity: 0.8;
-            font-weight: 300;
+        .log-item:hover {
+            border-color: var(--primary);
+            background: rgba(47, 53, 89, 0.3);
         }
 
-        .hero-section {
-            text-align: center;
-            padding: 100px 0 60px;
+        .log-header {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .hero-section h2 {
-            font-size: 56px;
-            line-height: 1.2;
-            background: linear-gradient(to right, #fff, var(--accent), var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: #fff;
-            margin-bottom: 20px;
+        .log-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .hero-section p {
-            font-size: 22px;
-            color: var(--accent);
-            opacity: 0.6;
-        }
-
-        .benefits-list {
-            list-style: none;
-            margin-top: 30px;
-        }
-
-        .benefits-list li {
-            margin-bottom: 25px;
-            padding-left: 35px;
-            position: relative;
-        }
-
-        .benefits-list li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 12px;
-            width: 15px;
-            height: 2px;
-            background: var(--primary);
-            border-radius: 2px;
-        }
-
-        .benefits-list strong {
-            display: block;
-            font-size: 20px;
-            color: var(--accent);
-            margin-bottom: 5px;
-        }
-
-        .cta-section {
-            text-align: center;
-            padding: 40px 0;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: #fff;
-            color: var(--bg-dark);
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: 600;
-            padding: 16px 50px;
+        /* 標籤基礎樣式 */
+        .tag {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 12px;
             border-radius: 4px;
-            transition: all 0.3s;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            text-transform: uppercase;
+            border: 1px solid;
         }
 
-        .cta-button:hover {
-            transform: translateY(-3px);
-            background: var(--accent);
-            box-shadow: 0 15px 40px rgba(114, 114, 176, 0.3);
+        /* 顏色標籤定義 */
+        .tag-web {
+            color: #7272b0;
+            border-color: #7272b0;
+            background: rgba(114, 176, 176, 0.05);
+        }
+
+        .tag-desktop {
+            color: #3b82f6;
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .tag-release {
+            color: #86C166;
+            border-color: #86C166;
+            background: rgba(134, 193, 102, 0.05);
+        }
+
+        .tag-fix {
+            color: #F7C242;
+            border-color: #F7C242;
+            background: rgba(247, 194, 66, 0.05);
+        }
+
+        .tag-test {
+            color: #E84545;
+            border-color: #E84545;
+            background: rgba(232, 69, 69, 0.05);
+        }
+
+        /* 🌟 當前版本專屬 (櫻色) */
+        .tag-current {
+            color: #fff;
+            border-color: var(--sakura);
+            background: var(--sakura);
+            box-shadow: 0 0 12px rgba(232, 122, 144, 0.4);
+            animation: sakura-glow 2s infinite;
+        }
+
+        @keyframes sakura-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(232, 122, 144, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(232, 122, 144, 0.7);
+            }
+        }
+
+        .log-date {
+            font-family: monospace;
+            font-size: 13px;
+            color: var(--accent);
+            margin-right: auto;
+        }
+
+        .log-title {
+            font-size: 20px;
+            color: #fff;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        /* 開合內容動畫 */
+        .log-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0, 1, 0, 1);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0 25px;
+        }
+
+        .log-item.active .log-content {
+            max-height: 1000px;
+            padding: 20px 25px 30px;
+            transition: all 0.4s ease-in;
+        }
+
+        .log-content ul {
+            padding-left: 20px;
+            color: var(--accent);
+            font-size: 15px;
+        }
+
+        .log-content li {
+            margin-bottom: 8px;
         }
 
         footer {
@@ -278,232 +268,162 @@
             opacity: 0.3;
         }
 
-        .img-placeholder {
-            width: 100%;
-            height: 300px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.05));
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 30px 0;
-            border: 1px solid var(--border-soft);
-            color: var(--accent);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        @media (max-width: 768px) {
+        @media (max-width: 640px) {
             header {
-                padding: 0 30px;
+                padding: 0 20px;
             }
 
-            .menu {
-                display: block;
-            }
-
-            nav ul {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                width: 100%;
-                height: 100vh;
-                background: var(--bg-dark);
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-                z-index: 1000;
-            }
-
-            nav ul.show {
-                right: 0;
-            }
-
-            .hero-section h2 {
-                font-size: 38px;
+            nav {
+                display: none;
             }
         }
     </style>
 </head>
 
 <body>
-
+    <!-- 鼠標追隨球 -->
     <div id="follower-ball"></div>
 
     <div class="shell">
         <header>
-            <a href="./" class="logo-link">
-                <div class="logo-img-box">
-                    <!-- 請確認圖片路徑，依據你的檔案結構可能是 images/logo.png 或 logo_w.png -->
-                    <img src="images/logo_w.png" alt="Logo">
-                </div>
+            <a href="../" class="logo-link">
+                <div class="logo-img-box"><img src="../images/logo_w.png" alt="Logo"
+                        style="width:100%; height:100%; object-fit:cover;"></div>
                 <h1>星崔AI</h1>
             </a>
-
-            <button class="menu" aria-label="開啟選單">&#9776;</button>
-
             <nav>
                 <ul id="nav-menu">
-                    <li><a href="introduce/">軟體介紹</a></li>
-                    <li><a href="about/">關於我們</a></li>
-                    <li id="auth-link-container"><a href="login/" id="auth-link">登入</a></li>
-                    <li id="logout-container" style="display:none;"><a href="#" id="logout-btn">登出</a></li>
+                    <li><a href="../log/" style="color:#fff; opacity:1;">更新日誌</a></li>
+                    <li><a href="../download/">安裝教學</a></li>
+                    <li><a href="../introduce/">軟體介紹</a></li>
+                    <li><a href="../about/">關於我們</a></li>
+                    <li id="auth-link-container"><a href="../login/" id="auth-link">登入</a></li>
                 </ul>
             </nav>
         </header>
 
         <main>
-            <section class="hero-section">
-                <h2>智慧姿勢矯正<br>& 專注力提升</h2>
-                <p id="user-welcome">坐得對，學得快。智慧姿勢優化，專注力自然飆升。</p>
-            </section>
+            <div style="text-align: center; margin-bottom: 50px;">
+                <h2 style="font-size: 36px; color: #fff; font-weight: 800;">更新日誌</h2>
+                <p style="color: var(--accent); opacity: 0.8;">追蹤星崔 AI 的演進與優化歷程</p>
+                <p style="color: #7bb4ff; opacity: 0.8;">點選紀錄查看詳細說明</p>
+            </div>
 
-            <section>
-                <h2>智慧矯正的定義</h2>
-                <p>您的肩頸疼痛，很可能是姿勢不良造成的。別再讓錯誤的坐姿偷走您的精力！我們的智慧系統能悄悄地在背景為您守護健康，讓您專注於工作，而非痠痛。</p>
-                <div class="img-placeholder">[ 姿勢分析視覺呈現 ]</div>
-            </section>
-
-            <section>
-                <h2>運作原理</h2>
-                <p>系統透過先進的視覺技術，即時偵測您的坐姿。一旦發現您開始駝背、前傾或側坐，它會以溫和方式引導您回到正確的姿勢。</p>
-                <div class="img-placeholder">[ AI 偵測引擎示意 ]</div>
-            </section>
-
-            <section>
-                <h2>核心優勢</h2>
-                <ul class="benefits-list">
-                    <li>
-                        <strong>矯正身體習慣</strong>
-                        從根本上改善您的姿勢，預防因久坐不當而引起的肩頸痠痛。
-                    </li>
-                    <li>
-                        <strong>提升工作效率</strong>
-                        正確的姿勢有助於血液循環和氧氣供應，能自然提升您的專注度。
-                    </li>
-                </ul>
-            </section>
-
-            <section class="cta-section">
-                <a href="login/" id="main-cta" class="cta-button">
-                    立即開始！
-                </a>
-            </section>
+            <div id="log-list" class="log-container">
+                <!-- 由 JS 從 log.json 載入 -->
+                <p style="text-align: center; opacity: 0.5;">正在載入日誌數據...</p>
+            </div>
         </main>
 
         <footer>
-            <p>&copy; 2026 -
-                <script>document.write(new Date().getFullYear())</script> The Sentry AI All Rights Reserved.
-            </p>
-            <div style="display: flex;justify-content: center;gap: 10px;">
-                <a>隱私權政策</a>
-                <a>｜</a>
-                <a>服務條款</a>
-            </div>
+            <p>&copy; 2026 The Sentry AI All Rights Reserved.</p>
         </footer>
     </div>
 
-    <!-- Firebase SDK 引入 (從 indexwhat 整合) -->
+    <!-- Firebase & Log Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-        // 沿用舊網頁的 Firebase 配置
+        // Firebase 配置 (維持不變)
         const firebaseConfig = {
             apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
             authDomain: "workai-1d692.firebaseapp.com",
             projectId: "workai-1d692",
             storageBucket: "workai-1d692.firebasestorage.app",
-            messagingSenderId: "156453625217",
-            appId: "1:156453625217:web:7ef3a3642481c52449dc80",
-            measurementId: "G-4XPYJZMRL0"
+            appId: "1:156453625217:web:7ef3a3642481c52449dc80"
         };
-
-        // 初始化 Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const analytics = getAnalytics(app);
 
-        // 處理 UI 狀態更新
-        const authLink = document.getElementById('auth-link');
-        const logoutContainer = document.getElementById('logout-container');
-        const userWelcome = document.getElementById('user-welcome');
-        const mainCta = document.getElementById('main-cta');
-
-        // 監聽登入狀態
+        // 更新導覽列登入狀態
         onAuthStateChanged(auth, (user) => {
+            const authLink = document.getElementById('auth-link');
             if (user) {
-                // 使用者已登入
-                console.log("Logged in:", user.email);
                 authLink.innerText = "儀錶板";
-                authLink.href = "dashboard/"; // 假設登入後去控制台
-                logoutContainer.style.display = "block";
-                userWelcome.innerHTML = `歡迎回來，<strong>${user.email.split('@')[0]}</strong>！<br>我們已準備好為您監控姿勢。`;
-                mainCta.innerText = "開啟儀表板";
-                mainCta.href = "dashboard/";
-            } else {
-                // 使用者未登入
-                authLink.innerText = "登入";
-                authLink.href = "login/";
-                logoutContainer.style.display = "none";
-                userWelcome.innerText = "坐得對，學得快。智慧姿勢優化，專注力自然飆升。";
-                mainCta.innerText = "立即開始！";
-                mainCta.href = "login/";
+                authLink.href = "../dashboard/";
             }
         });
 
-        // 登出功能
-        document.getElementById('logout-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth).then(() => {
-                window.location.reload();
-            }).catch((error) => {
-                console.error("Logout Error:", error);
+        // 讀取 JSON 並渲染日誌
+        async function fetchLogs() {
+            try {
+                const response = await fetch('log.json');
+                const logs = await response.json();
+                renderLogs(logs);
+            } catch (error) {
+                document.getElementById('log-list').innerHTML = `<p style="color:var(--sakura); text-align:center;">日誌檔案讀取失敗。</p>`;
+            }
+        }
+
+        function renderLogs(logs) {
+            const list = document.getElementById('log-list');
+            list.innerHTML = '';
+
+            logs.forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'log-item';
+
+                // 處理標籤
+                const projectClass = log.project === 'web' ? 'tag-web' : 'tag-desktop';
+                const projectName = log.project === 'web' ? '網頁端' : '桌面端';
+
+                let typeClass = '', typeName = '';
+                switch (log.type) {
+                    case 'release': typeClass = 'tag-release'; typeName = '版本發布'; break;
+                    case 'fix': typeClass = 'tag-fix'; typeName = '錯誤修正'; break;
+                    case 'test': typeClass = 'tag-test'; typeName = '測試版本'; break;
+                }
+
+                const currentTag = log.current === true ? `<span class="tag tag-current">當前版本</span>` : '';
+
+                item.innerHTML = `
+                    <div class="log-header">
+                        <div class="log-meta">
+                            ${currentTag}
+                            <span class="tag ${projectClass}">${projectName}</span>
+                            <span class="tag ${typeClass}">${typeName}</span>
+                            <span class="log-date">${log.date}</span>
+                        </div>
+                        <h3 class="log-title">${log.title}</h3>
+                    </div>
+                    <div class="log-content">${log.content}</div>
+                `;
+
+                item.onclick = () => {
+                    // 切換開合狀態
+                    item.classList.toggle('active');
+                };
+
+                list.appendChild(item);
             });
+        }
+
+        fetchLogs();
+
+        // --- 絲滑鼠標球 JS 邏輯 ---
+        const ball = document.getElementById('follower-ball');
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let ballX = mouseX;
+        let ballY = mouseY;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
         });
-    </script>
 
-    <script>
-        // 頁面動態效果腳本 (從 what.html 整合)
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuBtn = document.querySelector('.menu');
-            const navMenu = document.getElementById('nav-menu');
+        function animateBall() {
+            // 線性插值動畫 (Lerp)
+            ballX += (mouseX - ballX) * 0.12;
+            ballY += (mouseY - ballY) * 0.12;
 
-            if (menuBtn && navMenu) {
-                menuBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    navMenu.classList.toggle('show');
-                });
+            // 關鍵：-9 補償球體寬高的一半，使其精確對準中心
+            ball.style.transform = `translate(${ballX - 9}px, ${ballY - 9}px)`;
 
-                document.addEventListener('click', (e) => {
-                    if (navMenu.classList.contains('show') && !navMenu.contains(e.target) && !menuBtn.contains(e.target)) {
-                        navMenu.classList.remove('show');
-                    }
-                });
-            }
-
-            const ball = document.getElementById('follower-ball');
-            let mouseX = window.innerWidth / 2;
-            let mouseY = window.innerHeight / 2;
-            let ballX = mouseX;
-            let ballY = mouseY;
-
-            document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-
-            function animateBall() {
-                ballX += (mouseX - ballX) * 0.1;
-                ballY += (mouseY - ballY) * 0.1;
-                ball.style.transform = `translate(${ballX - 9}px, ${ballY - 9}px)`;
-                requestAnimationFrame(animateBall);
-            }
-            animateBall();
-        });
+            requestAnimationFrame(animateBall);
+        }
+        animateBall();
     </script>
 </body>
 
