@@ -1,5 +1,12 @@
 [
     {
+        "date": "2026-03-03",
+        "project": "desktop",
+        "type": "fix",
+        "title": "有關BETA 0.3.1 閃退錯誤問題",
+        "content": "我們目前發現BETA 0.3.1 在進入專注模式時會閃退導致全世界沒有人能成功試過，目前正在全力搶修中。"
+    },
+    {
         "date": "2026-03-01",
         "project": "web",
         "type": "fix",
