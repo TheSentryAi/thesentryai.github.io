@@ -295,6 +295,28 @@
             letter-spacing: 2px;
         }
 
+        /* 圖片容器樣式 */
+        .img-container {
+            width: 100%;
+            margin: 30px 0;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: transform 0.4s ease;
+        }
+
+        .img-container img {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .img-container:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
         @media (max-width: 768px) {
             header {
                 padding: 0 30px;
@@ -367,6 +389,11 @@
                 <h2>智慧矯正的定義</h2>
                 <p>您的肩頸疼痛，很可能是姿勢不良造成的。別再讓錯誤的坐姿偷走您的精力！我們的智慧系統能悄悄地在背景為您守護健康，讓您專注於工作，而非痠痛。</p>
                 <div class="img-placeholder">[ 姿勢分析視覺呈現 ]</div>
+                <!--
+                    <div class="img-container">
+                    <img src="images/homepage_1.png" alt="姿勢分析視覺呈現">
+                    </div>
+                -->
             </section>
 
             <section>

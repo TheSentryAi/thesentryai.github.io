@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <link rel="icon" type="image/x-icon" href="../../images/logo_w.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星崔AI | 所有版本</title>
+    <style>
+        :root {
+            --bg-dark: #090b0c;
+            --bg-deep: #2f3559;
+            --primary: #7272b0;
+            --accent: #b7a8bd;
+            --text-light: #dcd5e5;
+            --border-soft: rgba(183, 168, 189, 0.15);
+            --green: #86C166;
+            --official: #FFBA84;
+            --test: #0D5661;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: "PingFang TC", sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at 50% 50%, var(--bg-deep) 0%, var(--bg-dark) 100%);
+            background-attachment: fixed;
+            color: var(--text-light);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* 絲滑鼠標球 CSS */
+        #follower-ball {
+            position: fixed;
+            width: 18px;
+            height: 18px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 0 20px var(--primary);
+            opacity: 0.5;
+            mix-blend-mode: screen;
+            left: 0;
+            top: 0;
+            will-change: transform;
+        }
+
+        header {
+            background: rgba(9, 11, 12, 0.7);
+            backdrop-filter: blur(15px);
+            height: 80px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8%;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+        }
+
+        .logo-img-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: 0.5s;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-link:hover .logo-img-box {
+            transform: scale(1.1);
+        }
+
+        .logo-link h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #dcd5e5;
+            letter-spacing: -0.5px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.7;
+            transition: 0.4s;
+            letter-spacing: 1px;
+        }
+
+        nav a:hover {
+            opacity: 1;
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 140px auto 80px;
+            padding: 0 25px;
+            flex: 1;
+        }
+
+        /* --- 版本清單樣式 --- */
+        .version-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .version-card {
+            background: rgba(47, 53, 89, 0.2);
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            padding: 30px;
+            transition: 0.3s;
+        }
+
+        .version-card:hover {
+            border-color: var(--primary);
+            background: rgba(47, 53, 89, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .badge-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 12px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .badge-latest {
+            background: var(--green);
+            box-shadow: 0 0 10px var(--green);
+        }
+
+        .badge-official {
+            background: var(--official);
+            color: var(--bg-dark);
+        }
+
+        .badge-test {
+            background: var(--test);
+        }
+
+        .v-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            margin: 5px 0;
+        }
+
+        .v-date {
+            font-family: monospace;
+            font-size: 14px;
+            color: var(--accent);
+            opacity: 0.8;
+        }
+
+        .v-summary {
+            margin: 15px 0;
+            font-size: 16px;
+            color: var(--text-light);
+            opacity: 0.9;
+        }
+
+        .v-download {
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .download-link {
+            color: var(--accent);
+            border-bottom: 1px solid var(--accent);
+        }
+
+        .download-link:hover {
+            color: #fff;
+            border-color: #fff;
+        }
+
+        .no-download {
+            color: var(--accent);
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        footer {
+            padding: 60px;
+            text-align: center;
+            font-size: 13px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 0 20px;
+            }
+
+            nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="follower-ball"></div>
+
+    <div class="shell">
+        <header>
+            <a href="../../" class="logo-link">
+                <div class="logo-img-box"><img src="../../images/logo_w.png" alt="Logo" style="width:100%"></div>
+                <h1>星崔AI</h1>
+            </a>
+            <nav>
+                <ul id="nav-menu">
+                    <li><a href="../">安裝教學</a></li>
+                    <li><a href="../../introduce/">軟體介紹</a></li>
+                    <li><a href="../../about/">關於我們</a></li>
+                    <li id="auth-link-container"><a href="../../login/" id="auth-link">登入</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-size: 42px; color: #fff; font-weight: 800;">所有版本</h2>
+                <p style="color: var(--accent);">獲取星崔 AI 歷代發行版本與更新資訊</p>
+            </div>
+
+            <div id="version-container" class="version-list">
+                <p style="text-align: center; opacity: 0.5;">正在擷取版本數據...</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 -
+                <script>document.write(new Date().getFullYear())</script> The Sentry AI All Rights Reserved.
+            </p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+        // Firebase 配置 (用於導覽列同步)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
+            authDomain: "workai-1d692.firebaseapp.com",
+            projectId: "workai-1d692",
+            storageBucket: "workai-1d692.firebasestorage.app",
+            appId: "1:156453625217:web:7ef3a3642481c52449dc80"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            const authLink = document.getElementById('auth-link');
+            if (user) {
+                authLink.innerText = "儀錶板";
+                authLink.href = "../../dashboard/";
+            }
+        });
+
+        // 讀取 JSON 並渲染
+        async function fetchVersions() {
+            try {
+                const response = await fetch('version.json');
+                let data = await response.json();
+
+                // 排序邏輯：isLatest 為 true 的排在最前面
+                data.sort((a, b) => (b.isLatest === true) - (a.isLatest === true));
+
+                renderVersions(data);
+            } catch (error) {
+                document.getElementById('version-container').innerHTML = `<p style="text-align:center; color:var(--accent);">無法載入版本資訊。</p>`;
+            }
+        }
+
+        function renderVersions(data) {
+            const container = document.getElementById('version-container');
+            container.innerHTML = '';
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'version-card';
+
+                // 1. 最新版本標籤
+                const latestBadge = item.isLatest === true ? `<span class="badge badge-latest">最新版本</span>` : '';
+
+                // 2. 正式/測試版本標籤
+                const typeBadge = item.isTest === true
+                    ? `<span class="badge badge-test">測試版本</span>`
+                    : `<span class="badge badge-official">正式版本</span>`;
+
+                // 3. 摘要處理
+                const summaryText = (item.summary && item.summary.trim() !== "") ? item.summary : "-";
+
+                // 4. 下載連結處理
+                const downloadHTML = (item.downloadLink && item.downloadLink.trim() !== "")
+                    ? `<a href="${item.downloadLink}" class="v-download download-link">點我下載</a>`
+                    : `<span class="v-download no-download">此版本不提供下載</span>`;
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="badge-group">${latestBadge}${typeBadge}</div>
+                        <span class="v-date">${item.date}</span>
+                    </div>
+                    <h3 class="v-num">${item.version}</h3>
+                    <p class="v-summary">${summaryText}</p>
+                    ${downloadHTML}
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        fetchVersions();
+
+        // 絲滑鼠標球邏輯
+        const ball = document.getElementById('follower-ball');
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2, ballX = mouseX, ballY = mouseY;
+        document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        function animateBall() {
+            ballX += (mouseX - ballX) * 0.12; ballY += (mouseY - ballY) * 0.12;
+            ball.style.transform = `translate(${ballX - 9}px, ${ballY - 9}px)`;
+            requestAnimationFrame(animateBall);
+        }
+        animateBall();
+    </script>
+</body>
+
+</html>

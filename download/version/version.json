@@ -1,0 +1,26 @@
+[
+    {
+        "isLatest": true,
+        "isTest": true,
+        "date": "2026-03-03",
+        "version": "v0.4.0",
+        "summary": "優化用戶體驗、修正網址、介面調整、安裝檔修正。",
+        "downloadLink": "https://github.com/TheSentryAi/thesentryai.github.io/releases/download/v0.4.0/Setup_TheSentryAI_Beta0.4.0.exe"
+    },
+    {
+        "isLatest": false,
+        "isTest": false,
+        "date": "-",
+        "version": "v1.0.0",
+        "summary": "尚未發行",
+        "downloadLink": ""
+    },
+    {
+        "isLatest": false,
+        "isTest": true,
+        "date": "2026-02-28",
+        "version": "v0.3.1",
+        "summary": "用戶體驗優化、資料庫功能更加完善。",
+        "downloadLink": "https://github.com/TheSentryAi/thesentryai.github.io/releases/download/v0.3.1/Setup_TheSentryAI.exe"
+    }
+]
