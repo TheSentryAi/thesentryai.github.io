@@ -1,5 +1,12 @@
 [
     {
+        "date": "2026-03-03",
+        "project": "desktop",
+        "type": "fix",
+        "title": "有關BETA 0.4.0 閃退錯誤問題",
+        "content": "當開發員正以為一切正常時，發現一樣的問題又出現了，我們正在釐清問題出在哪裡，可能會影響正式版發布。"
+    },
+    {
         "date": "2025-02-28",
         "project": "desktop",
         "type": "release",
