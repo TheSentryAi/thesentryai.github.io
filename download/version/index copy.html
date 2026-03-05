@@ -23,7 +23,7 @@
             padding: 0;
             margin: 0;
             box-sizing: border-box;
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            font-family: "PingFang TC", sans-serif;
         }
 
         body {
@@ -74,7 +74,6 @@
             align-items: center;
             gap: 16px;
             text-decoration: none;
-            cursor: pointer;
         }
 
         .logo-img-box {
@@ -113,7 +112,6 @@
         }
 
         nav a:hover {
-            color: #fff;
             opacity: 1;
             text-shadow: 0 0 10px var(--primary);
         }
@@ -207,35 +205,22 @@
             font-weight: bold;
             text-decoration: none;
             transition: 0.3s;
-            padding: 5px 0;
         }
 
-        /* 連結狀態樣式 */
         .download-link {
-            color: #fff;
-            border-bottom: 2px solid var(--primary);
+            color: var(--accent);
+            border-bottom: 1px solid var(--accent);
         }
 
         .download-link:hover {
-            color: var(--accent);
+            color: #fff;
             border-color: #fff;
-            transform: translateY(-2px);
-        }
-
-        .locked-link {
-            color: #E84545;
-            border-bottom: 1px dashed #E84545;
-        }
-
-        .locked-link:hover {
-            opacity: 0.8;
         }
 
         .no-download {
             color: var(--accent);
-            opacity: 0.3;
+            opacity: 0.4;
             cursor: not-allowed;
-            border: none;
         }
 
         footer {
@@ -263,8 +248,7 @@
     <div class="shell">
         <header>
             <a href="../../" class="logo-link">
-                <div class="logo-img-box"><img src="../../images/logo_w.png" alt="Logo"
-                        style="width:100%; height:100%; object-fit:cover;"></div>
+                <div class="logo-img-box"><img src="../../images/logo_w.png" alt="Logo" style="width:100%"></div>
                 <h1>星崔AI</h1>
             </a>
             <nav>
@@ -284,7 +268,7 @@
             </div>
 
             <div id="version-container" class="version-list">
-                <p style="text-align: center; opacity: 0.5;">正在檢查權限並讀取數據...</p>
+                <p style="text-align: center; opacity: 0.5;">正在擷取版本數據...</p>
             </div>
         </main>
 
@@ -299,6 +283,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
+        // Firebase 配置 (用於導覽列同步)
         const firebaseConfig = {
             apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
             authDomain: "workai-1d692.firebaseapp.com",
@@ -309,44 +294,29 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        let currentUser = null;
-        let versionData = [];
-
-        // 1. 監聽登入狀態
         onAuthStateChanged(auth, (user) => {
-            currentUser = user;
             const authLink = document.getElementById('auth-link');
-
             if (user) {
                 authLink.innerText = "儀錶板";
                 authLink.href = "../../dashboard/";
-            } else {
-                authLink.innerText = "登入";
-                authLink.href = "../../login/";
-            }
-
-            // 每次登入狀態改變，就重新渲染列表（確保按鈕即時解鎖）
-            if (versionData.length > 0) {
-                renderVersions(versionData);
-            } else {
-                fetchVersions();
             }
         });
 
-        // 2. 讀取 JSON
+        // 讀取 JSON 並渲染
         async function fetchVersions() {
             try {
                 const response = await fetch('version.json');
-                versionData = await response.json();
+                let data = await response.json();
+
                 // 排序邏輯：isLatest 為 true 的排在最前面
-                versionData.sort((a, b) => (b.isLatest === true) - (a.isLatest === true));
-                renderVersions(versionData);
+                data.sort((a, b) => (b.isLatest === true) - (a.isLatest === true));
+
+                renderVersions(data);
             } catch (error) {
-                document.getElementById('version-container').innerHTML = `<p style="text-align:center; color:var(--accent);">數據載入失敗。</p>`;
+                document.getElementById('version-container').innerHTML = `<p style="text-align:center; color:var(--accent);">無法載入版本資訊。</p>`;
             }
         }
 
-        // 3. 渲染列表 (包含權限偵測)
         function renderVersions(data) {
             const container = document.getElementById('version-container');
             container.innerHTML = '';
@@ -355,26 +325,21 @@
                 const card = document.createElement('div');
                 card.className = 'version-card';
 
+                // 1. 最新版本標籤
                 const latestBadge = item.isLatest === true ? `<span class="badge badge-latest">最新版本</span>` : '';
+
+                // 2. 正式/測試版本標籤
                 const typeBadge = item.isTest === true
                     ? `<span class="badge badge-test">測試版本</span>`
                     : `<span class="badge badge-official">正式版本</span>`;
 
+                // 3. 摘要處理
                 const summaryText = (item.summary && item.summary.trim() !== "") ? item.summary : "-";
 
-                // --- 🔒 下載權限邏輯 ---
-                let downloadHTML = "";
-
-                if (!item.downloadLink || item.downloadLink.trim() === "") {
-                    // 情況 A: JSON 沒填連結
-                    downloadHTML = `<span class="v-download no-download">此版本不提供下載</span>`;
-                } else if (!currentUser) {
-                    // 情況 B: 有連結但沒登入
-                    downloadHTML = `<a href="../../login/" class="v-download locked-link">🔒 請先登入再下載</a>`;
-                } else {
-                    // 情況 C: 有連結且已登入
-                    downloadHTML = `<a href="${item.downloadLink}" class="v-download download-link">⬇ 點我下載 (${item.version})</a>`;
-                }
+                // 4. 下載連結處理
+                const downloadHTML = (item.downloadLink && item.downloadLink.trim() !== "")
+                    ? `<a href="${item.downloadLink}" class="v-download download-link">點我下載</a>`
+                    : `<span class="v-download no-download">此版本不提供下載</span>`;
 
                 card.innerHTML = `
                     <div class="card-header">
@@ -390,7 +355,9 @@
             });
         }
 
-        // 4. 絲滑鼠標球
+        fetchVersions();
+
+        // 絲滑鼠標球邏輯
         const ball = document.getElementById('follower-ball');
         let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2, ballX = mouseX, ballY = mouseY;
         document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
