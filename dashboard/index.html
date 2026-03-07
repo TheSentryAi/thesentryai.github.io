@@ -30,43 +30,112 @@
         }
 
         /* 自定義滾動條 */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--color-bg); }
-        ::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--color-secondary); }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-secondary);
+        }
 
         /* 下拉選單動畫 */
-        .dropdown { position: relative; padding-bottom: 12px; margin-bottom: -12px; }
-        .dropdown-menu {
-            display: block; opacity: 0; visibility: hidden; transform: translateY(10px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none;
-            background-color: var(--color-primary); border: 1px solid var(--color-secondary); z-index: 60;
+        .dropdown {
+            position: relative;
+            padding-bottom: 12px;
+            margin-bottom: -12px;
         }
-        .dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+
+        .dropdown-menu {
+            display: block;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            background-color: var(--color-primary);
+            border: 1px solid var(--color-secondary);
+            z-index: 60;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
 
         /* 絲滑轉場核心 CSS */
         .content-view {
             transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            transform: translateY(20px); opacity: 0; display: none;
+            transform: translateY(20px);
+            opacity: 0;
+            display: none;
         }
-        .content-view.active { display: block; opacity: 1; transform: translateY(0); }
-        .content-view.leaving { opacity: 0; transform: translateY(-10px) scale(0.98); }
+
+        .content-view.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .content-view.leaving {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.98);
+        }
 
         /* 側邊欄 */
         .sidebar {
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateX(-100%); z-index: 100; background-color: var(--color-primary);
-            position: fixed; top: 0; left: 0; height: 100%; width: 80%; max-width: 300px;
+            transform: translateX(-100%);
+            z-index: 100;
+            background-color: var(--color-primary);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 80%;
+            max-width: 300px;
             box-shadow: 10px 0 25px rgba(0, 0, 0, 0.8);
         }
-        .sidebar.active { transform: translateX(0); }
 
-        .glass-card { background: rgba(47, 53, 89, 0.2); backdrop-filter: blur(16px); border: 1px solid rgba(114, 114, 176, 0.2); }
-        .button-click-effect:active { transform: scale(0.95); }
-        .nav-btn { color: var(--color-light); transition: all 0.25s ease; }
-        .nav-btn:hover { background-color: var(--color-secondary); color: white; }
-        .active-tab-border { border-bottom: 2px solid var(--color-accent); color: var(--color-accent) !important; }
-        
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .glass-card {
+            background: rgba(47, 53, 89, 0.2);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(114, 114, 176, 0.2);
+        }
+
+        .button-click-effect:active {
+            transform: scale(0.95);
+        }
+
+        .nav-btn {
+            color: var(--color-light);
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--color-secondary);
+            color: white;
+        }
+
+        .active-tab-border {
+            border-bottom: 2px solid var(--color-accent);
+            color: var(--color-accent) !important;
+        }
+
         /* 修改後的統計卡片樣式 */
         .stat-card {
             background: linear-gradient(135deg, rgba(47, 53, 89, 0.4) 0%, rgba(114, 114, 176, 0.1) 100%);
@@ -74,10 +143,16 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        .stat-card:hover { transform: translateY(-5px); border-color: var(--color-accent); background: rgba(114, 114, 176, 0.2); }
-        .stat-card.active-stat { 
-            border-color: var(--color-accent); 
-            background: rgba(114, 114, 176, 0.35); 
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-accent);
+            background: rgba(114, 114, 176, 0.2);
+        }
+
+        .stat-card.active-stat {
+            border-color: var(--color-accent);
+            background: rgba(114, 114, 176, 0.35);
             box-shadow: 0 0 20px rgba(183, 168, 189, 0.15);
         }
     </style>
@@ -90,7 +165,11 @@
         <div class="flex items-center justify-between mb-8">
             <span class="text-2xl font-bold tracking-wider text-[#dcd5e5]">星崔AI</span>
             <button onclick="document.getElementById('sidebar').classList.remove('active')" class="text-[#b7a8bd]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
             </button>
         </div>
         <nav id="mobile-nav-content" class="flex flex-col space-y-2"></nav>
@@ -101,13 +180,21 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
             <div class="flex items-center">
                 <button id="hamburger-btn" class="text-[#dcd5e5] mr-4 lg:hidden button-click-effect">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
                 </button>
                 <div class="flex items-center space-x-4 cursor-pointer group" onclick="navigate('dashboard', 'home')">
-                    <div class="relative overflow-hidden rounded-xl shadow-lg w-14 h-14 transition-transform group-hover:scale-110 duration-500">
+                    <div
+                        class="relative overflow-hidden rounded-xl shadow-lg w-14 h-14 transition-transform group-hover:scale-110 duration-500">
                         <img src="../images/logo_w.png" alt="Logo" class="w-full h-full object-cover">
                     </div>
-                    <h1 class="text-2xl font-bold text-[#dcd5e5] tracking-tight group-hover:text-white transition-colors">星崔AI</h1>
+                    <h1
+                        class="text-2xl font-bold text-[#dcd5e5] tracking-tight group-hover:text-white transition-colors">
+                        星崔AI</h1>
                 </div>
             </div>
 
@@ -115,29 +202,42 @@
                 <div class="dropdown">
                     <button class="nav-btn px-4 py-2 rounded-xl font-medium flex items-center button-click-effect">
                         帳號管理
-                        <svg class="ml-1.5 w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg class="ml-1.5 w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
                     </button>
                     <div class="dropdown-menu absolute left-0 mt-2 w-52 rounded-2xl shadow-2xl overflow-hidden">
                         <div class="py-1">
-                            <a href="#" data-tab="settings" class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">設定中心</a>
-                            <a href="#" data-tab="account" class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">個人帳號</a>
+                            <a href="#" data-tab="settings"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">設定中心</a>
+                            <a href="#" data-tab="account"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">個人帳號</a>
                         </div>
                     </div>
                 </div>
 
-                <button onclick="navigate('tutorial-page', 'tutorial')" class="nav-btn px-4 py-2 rounded-xl font-medium button-click-effect">使用教學</button>
-                <button onclick="navigate('data-dashboard', 'data')" class="nav-btn px-4 py-2 rounded-xl font-medium button-click-effect">我的數據</button>
+                <button onclick="navigate('tutorial-page', 'tutorial')"
+                    class="nav-btn px-4 py-2 rounded-xl font-medium button-click-effect">使用教學</button>
+                <button onclick="navigate('data-dashboard', 'data')"
+                    class="nav-btn px-4 py-2 rounded-xl font-medium button-click-effect">我的數據</button>
 
                 <div class="dropdown">
                     <button class="nav-btn px-4 py-2 rounded-xl font-medium flex items-center button-click-effect">
                         技術服務
-                        <svg class="ml-1.5 w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg class="ml-1.5 w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
                     </button>
                     <div class="dropdown-menu absolute left-0 mt-2 w-52 rounded-2xl shadow-2xl overflow-hidden">
                         <div class="py-1">
-                            <a href="../download/" class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">下載安裝檔</a>
-                            <a href="#" data-tab="productStatement" class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">產品聲明</a>
-                            <a href="#" data-tab="reportIssue" class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">回報問題</a>
+                            <a href="../download/"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">下載安裝檔</a>
+                            <a href="#" data-tab="productStatement"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">產品聲明</a>
+                            <a href="#" data-tab="reportIssue"
+                                class="flex items-center px-4 py-3 text-sm text-[#dcd5e5] hover:bg-[#7272b0] transition">回報問題</a>
                         </div>
                     </div>
                 </div>
@@ -145,7 +245,8 @@
                 <div class="h-8 w-[1px] bg-[#2f3559] mx-4"></div>
 
                 <div class="dropdown">
-                    <button class="flex items-center space-x-2 bg-[#2f3559] hover:bg-[#7272b0] px-5 py-2.5 rounded-full border border-[#7272b0]/40 transition button-click-effect">
+                    <button
+                        class="flex items-center space-x-2 bg-[#2f3559] hover:bg-[#7272b0] px-5 py-2.5 rounded-full border border-[#7272b0]/40 transition button-click-effect">
                         <div class="w-2.5 h-2.5 bg-[#86C166] rounded-full animate-pulse shadow-[0_0_8px_#b7a8bd]"></div>
                         <span class="text-sm font-bold text-[#dcd5e5]">線上中</span>
                     </button>
@@ -155,7 +256,8 @@
                             <p id="menu-nickname" class="text-sm font-bold text-[#dcd5e5] truncate">載入中...</p>
                         </div>
                         <div class="py-1">
-                            <button id="logout-btn-nav" class="w-full text-left px-5 py-3 text-sm text-[#dcd5e5] hover:bg-[#2f3559] transition flex items-center group">登出系統</button>
+                            <button id="logout-btn-nav"
+                                class="w-full text-left px-5 py-3 text-sm text-[#dcd5e5] hover:bg-[#2f3559] transition flex items-center group">登出系統</button>
                         </div>
                     </div>
                 </div>
@@ -165,7 +267,8 @@
 
     <main id="main-content" class="p-6 sm:p-10 flex-grow relative">
         <!-- 儀表板 (主頁) -->
-        <div id="view-dashboard" class="content-view active glass-card p-10 rounded-[2.5rem] max-w-6xl mx-auto shadow-2xl">
+        <div id="view-dashboard"
+            class="content-view active glass-card p-10 rounded-[2.5rem] max-w-6xl mx-auto shadow-2xl">
             <h2 class="text-4xl font-black text-[#dcd5e5] mb-2 tracking-tight">歡迎回來</h2>
             <p class="text-[#b7a8bd] mb-10 text-lg">系統運作正常，隨時準備協助您的 AI 任務。</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -185,13 +288,15 @@
                 <div class="bg-[#2f3559]/40 p-8 rounded-3xl border border-[#7272b0]/30 shadow-xl">
                     <h3 class="font-black text-xl text-[#dcd5e5] mb-6">帳號概覽</h3>
                     <p id="nickname-display" class="text-3xl font-black text-[#dcd5e5] mb-6">載入中...</p>
-                    <button onclick="navigate('profile-tutorial', 'account')" class="w-full py-4 bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] rounded-2xl font-black transition-all shadow-lg button-click-effect">編輯個人資料</button>
+                    <button onclick="navigate('profile-tutorial', 'account')"
+                        class="w-full py-4 bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] rounded-2xl font-black transition-all shadow-lg button-click-effect">編輯個人資料</button>
                 </div>
             </div>
         </div>
 
         <!-- 數據儀表板 (我的數據) - 已更新圖表互動 -->
-        <div id="view-data-dashboard" class="content-view glass-card p-10 rounded-[2.5rem] max-w-6xl mx-auto shadow-2xl">
+        <div id="view-data-dashboard"
+            class="content-view glass-card p-10 rounded-[2.5rem] max-w-6xl mx-auto shadow-2xl">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
                 <div>
                     <h2 class="text-4xl font-black text-[#dcd5e5] mb-2">我的專注數據</h2>
@@ -205,7 +310,8 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <!-- 卡片加入點擊事件與 ID -->
-                <div id="card-duration" onclick="updateActiveChart('duration')" class="stat-card p-6 rounded-3xl active-stat">
+                <div id="card-duration" onclick="updateActiveChart('duration')"
+                    class="stat-card p-6 rounded-3xl active-stat">
                     <p class="text-[#b7a8bd] text-sm font-bold uppercase tracking-widest mb-2">累計時長</p>
                     <div class="flex items-baseline space-x-1">
                         <span id="stat-total-minutes" class="text-4xl font-black text-[#dcd5e5]">0</span>
@@ -263,36 +369,52 @@
             <div class="bg-[#2f3559]/30 p-8 rounded-3xl border border-[#7272b0]/20">
                 <h3 class="text-2xl font-black text-[#b7a8bd] mb-4">快速入門</h3>
                 <p class="text-[#dcd5e5]/80 mb-8 leading-relaxed text-lg">歡迎使用星崔AI。我們致力於提供最直覺、最高效的 AI 協作體驗。</p>
-                <button class="bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] px-10 py-4 rounded-2xl font-black transition text-lg button-click-effect">開始觀看教學</button>
+                <!-- 找到這段代碼 -->
+                <button onclick="window.open('../', '_blank')"
+                    class="bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] px-10 py-4 rounded-2xl font-black transition text-lg button-click-effect">開始觀看教學</button>
             </div>
         </div>
 
         <!-- 帳號與設定頁面 -->
-        <div id="view-profile-tutorial" class="content-view glass-card p-10 rounded-[2.5rem] max-w-6xl mx-auto shadow-2xl">
+        <div id="view-profile-tutorial"
+            class="content-view glass-card p-10 rounded-[2.5rem] max-w-6xl mx-auto shadow-2xl">
             <div id="profile-greeting-container" class="mb-10">
                 <h2 class="text-4xl font-black text-[#dcd5e5] mb-2">載入中...</h2>
             </div>
             <div id="profile-nav-tabs" class="flex flex-wrap space-x-2 mb-10 border-b border-[#2f3559]"></div>
-            <div id="profile-tutorial-content" class="bg-[#090b0c]/40 p-10 rounded-3xl border border-[#2f3559] min-h-[400px]"></div>
+            <div id="profile-tutorial-content"
+                class="bg-[#090b0c]/40 p-10 rounded-3xl border border-[#2f3559] min-h-[400px]"></div>
         </div>
     </main>
 
     <!-- 登入警告 -->
-    <div id="login-alert-modal" class="fixed inset-0 z-[999] flex items-center justify-center bg-[#090b0c]/90 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
-        <div id="login-alert-card" class="bg-[#2f3559]/60 border border-[#7272b0]/50 p-8 rounded-[2rem] shadow-[0_0_60px_rgba(0,0,0,0.8)] max-w-sm w-[90%] transform scale-95 transition-transform duration-500 backdrop-filter backdrop-blur-xl">
-            <div class="w-20 h-20 bg-[#090b0c]/60 rounded-full flex items-center justify-center mb-6 mx-auto border border-[#7272b0]/30 shadow-inner">
-                <svg class="w-10 h-10 text-[#dcd5e5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+    <div id="login-alert-modal"
+        class="fixed inset-0 z-[999] flex items-center justify-center bg-[#090b0c]/90 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
+        <div id="login-alert-card"
+            class="bg-[#2f3559]/60 border border-[#7272b0]/50 p-8 rounded-[2rem] shadow-[0_0_60px_rgba(0,0,0,0.8)] max-w-sm w-[90%] transform scale-95 transition-transform duration-500 backdrop-filter backdrop-blur-xl">
+            <div
+                class="w-20 h-20 bg-[#090b0c]/60 rounded-full flex items-center justify-center mb-6 mx-auto border border-[#7272b0]/30 shadow-inner">
+                <svg class="w-10 h-10 text-[#dcd5e5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                    </path>
+                </svg>
             </div>
             <h3 class="text-2xl font-black text-[#dcd5e5] text-center mb-2">系統警示</h3>
             <p class="text-[#b7a8bd] text-center mb-8">您的安全憑證已逾期。<br>請重新驗證。</p>
-            <button id="modal-login-btn" class="w-full py-4 bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] rounded-2xl font-black transition-all shadow-lg tracking-widest">重新登入</button>
+            <button id="modal-login-btn"
+                class="w-full py-4 bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] rounded-2xl font-black transition-all shadow-lg tracking-widest">重新登入</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 2. 認證相關 (把所有需要的功能寫在同一個大括號裡，絕對不要寫兩次 import ... from firebase-auth.js)
+        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail, updateEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // 3. 資料庫相關
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
@@ -356,69 +478,77 @@
 
         // 專注數據監聽
         function setupFocusDataListener(uid) {
-            const q = query(collection(db, 'artifacts', appId, 'public', 'data', 'focusSessions'));
-            
+            // 修正 1：路徑改為電腦端上傳的根集合 "專注記錄列表資料來源"
+            const q = query(collection(db, '專注記錄列表資料來源'), where("user_id", "==", uid));
+
             onSnapshot(q, (snap) => {
                 const sessions = [];
                 snap.forEach(doc => {
                     const data = doc.data();
-                    if (data.user_id === uid) sessions.push(data);
+                    sessions.push(data); // 因為 query 已經幫我們過濾了 uid，直接 push 即可
                 });
 
-                sessions.sort((a, b) => b.start_time - a.start_time);
-                globalSessionsData = sessions; // 存入全局變量供圖表使用
+                // 修正 2：確保 start_time 的排序邏輯正確 (字串比較)
+                sessions.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
+                globalSessionsData = sessions;
 
                 let totalMinutes = 0;
                 let totalAlerts = 0;
                 let perfectCount = 0;
 
                 sessions.forEach(s => {
+                    // 修正 3：對齊 Python 端上傳的欄位名稱 (duration_minutes, total_slouch_count)
                     totalMinutes += s.duration_minutes || 0;
-                    totalAlerts += s.alerts_count || 0;
+                    totalAlerts += s.total_slouch_count || 0;
                     if (s.is_perfect_session) perfectCount++;
                 });
 
                 document.getElementById('stat-total-sessions').textContent = sessions.length;
-                document.getElementById('stat-total-minutes').textContent = totalMinutes;
+                document.getElementById('stat-total-minutes').textContent = Math.round(totalMinutes);
                 document.getElementById('stat-total-alerts').textContent = totalAlerts;
-                
+
                 const avg = totalMinutes > 0 ? (totalAlerts / (totalMinutes / 60)).toFixed(1) : "0.0";
                 document.getElementById('stat-avg-alerts').textContent = avg;
-                
+
                 const rate = sessions.length > 0 ? Math.round((perfectCount / sessions.length) * 100) : 0;
                 document.getElementById('stat-perfect-rate').textContent = rate;
 
-                // 更新圖表與列表
                 renderHistoryList(sessions);
                 initOrUpdateChart();
-                
+
             }, (err) => console.error("Firestore Listen Error:", err));
         }
 
-        // 歷史列表渲染
+        // 同步修正 renderHistoryList 裡的欄位名稱
         function renderHistoryList(sessions) {
             const list = document.getElementById('history-list-container');
             if (sessions.length === 0) {
                 list.innerHTML = `<div class="p-10 text-center text-[#b7a8bd]">目前尚無專注數據...</div>`;
             } else {
-                list.innerHTML = sessions.slice(0, 5).map(s => `
-                    <div class="px-8 py-6 hover:bg-[#2f3559]/10 transition group flex items-center justify-between">
+                list.innerHTML = sessions.slice(0, 5).map(s => {
+                    // 確保日期解析不會因為字串格式而出錯
+                    const dateObj = new Date(s.start_time);
+                    const dateStr = isNaN(dateObj) ? s.start_time : dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const modeText = s.mode_used === 'FRONTAL' ? '正面偵測' : '側身偵測';
+
+                    return `
+                    <div class="px-8 py-6 hover:bg-[#2f3559]/10 transition group flex items-center justify-between border-b border-[#2f3559]">
                         <div class="flex items-center space-x-6">
                             <div class="w-12 h-12 bg-[#2f3559]/40 rounded-xl flex items-center justify-center border border-[#7272b0]/20 text-[#dcd5e5]">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </div>
                             <div>
-                                <p class="text-[#dcd5e5] font-black">${new Date(s.start_time).toLocaleDateString()} ${new Date(s.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                                <p class="text-[#b7a8bd] text-sm">時長：${s.duration_minutes} 分鐘 · 模式：${s.mode === 'front' ? '正面' : '側身'}</p>
+                                <p class="text-[#dcd5e5] font-black">${dateStr}</p>
+                                <p class="text-[#b7a8bd] text-sm">時長：${s.duration_minutes} 分鐘 · 模式：${modeText}</p>
                             </div>
                         </div>
                         <div class="text-right">
                             <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${s.is_perfect_session ? 'bg-[#86C166]/20 text-[#86C166]' : 'bg-red-400/20 text-red-400'}">
-                                ${s.is_perfect_session ? '完美專注' : `警告 ${s.alerts_count} 次`}
+                                ${s.is_perfect_session ? '完美專注' : `糾正 ${s.total_slouch_count} 次`}
                             </span>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
             }
         }
 
@@ -427,20 +557,20 @@
             const canvas = document.getElementById('focusTrendChart');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            
+
             // 取最近 7 筆並反轉 (時間由舊到新顯示在圖表上)
             const recentSessions = [...globalSessionsData].slice(0, 7).reverse();
-            
+
             const labels = recentSessions.map(s => {
                 const d = new Date(s.start_time);
-                return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
+                return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
             });
 
             let datasetLabel = '';
             let dataPoints = [];
             let themeColor = '#7272b0';
 
-            switch(activeChartMode) {
+            switch (activeChartMode) {
                 case 'duration':
                     datasetLabel = '專注時長 (分鐘)';
                     dataPoints = recentSessions.map(s => s.duration_minutes);
@@ -449,13 +579,13 @@
                     break;
                 case 'alerts':
                     datasetLabel = '姿勢糾正 (次數)';
-                    dataPoints = recentSessions.map(s => s.alerts_count);
+                    dataPoints = recentSessions.map(s => s.total_slouch_count);
                     themeColor = '#b7a8bd';
                     document.getElementById('chart-display-title').textContent = '數據走勢：姿勢糾正次數';
                     break;
                 case 'avg':
                     datasetLabel = '每小時警告數';
-                    dataPoints = recentSessions.map(s => s.duration_minutes > 0 ? (s.alerts_count / (s.duration_minutes / 60)).toFixed(1) : 0);
+                    dataPoints = recentSessions.map(s => s.duration_minutes > 0 ? (s.total_slouch_count / (s.duration_minutes / 60)).toFixed(1) : 0);
                     themeColor = '#dcd5e5';
                     document.getElementById('chart-display-title').textContent = '數據走勢：每小時警告頻率';
                     break;
@@ -516,13 +646,13 @@
         }
 
         // 更新激活的圖表模式
-        window.updateActiveChart = function(mode) {
+        window.updateActiveChart = function (mode) {
             activeChartMode = mode;
             // 更新 UI 選中狀態
             document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('active-stat'));
             const activeCard = document.getElementById(`card-${mode}`);
             if (activeCard) activeCard.classList.add('active-stat');
-            
+
             initOrUpdateChart();
         };
 
@@ -545,7 +675,7 @@
                 const newEl = document.getElementById(`view-${currentView}`);
                 if (currentView === 'profile-tutorial') { renderProfileGreeting(); renderProfileTutorialContent(); }
                 newEl.classList.add('active');
-                
+
                 // 如果是切換到數據儀表板，重新繪製圖表以適應容器尺寸
                 if (currentView === 'data-dashboard') {
                     setTimeout(initOrUpdateChart, 100);
@@ -570,16 +700,224 @@
             const nav = document.getElementById('profile-nav-tabs');
             const content = document.getElementById('profile-tutorial-content');
             if (!nav || !content) return;
+
             nav.innerHTML = '';
             Object.keys(navTabs).forEach(key => {
                 const btn = document.createElement('button');
                 btn.className = `px-6 py-4 font-black transition-all ${currentTab === key ? 'active-tab-border text-[#b7a8bd]' : 'text-[#2f3559] hover:text-[#7272b0]'}`;
                 btn.textContent = navTabs[key].title;
-                btn.onclick = () => { if (currentTab === key) return; currentTab = key; content.style.opacity = '0'; setTimeout(() => { renderProfileTutorialContent(); renderProfileGreeting(); content.style.opacity = '1'; }, 200); };
+                btn.onclick = () => {
+                    if (currentTab === key) return;
+                    currentTab = key;
+                    content.style.opacity = '0';
+                    setTimeout(() => {
+                        renderProfileTutorialContent();
+                        renderProfileGreeting();
+                        content.style.opacity = '1';
+                    }, 200);
+                };
                 nav.appendChild(btn);
             });
-            content.innerHTML = `<div class="animate-in fade-in slide-in-from-bottom-4 duration-500"><h4 class="text-2xl font-black text-[#dcd5e5] mb-4">${navTabs[currentTab].title}</h4><p class="text-[#b7a8bd] leading-relaxed text-lg">${navTabs[currentTab].content}</p></div>`;
+
+            // 根據不同的 Tab 動態生成內容
+            let htmlContent = '';
+
+            if (currentTab === 'account') {
+                htmlContent = `
+                <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <h4 class="text-2xl font-black text-[#dcd5e5] mb-6">個人帳號管理</h4>
+                    <div class="space-y-6">
+                        <!-- 暱稱設定區塊 -->
+                        <div class="bg-[#2f3559]/20 p-6 rounded-2xl border border-[#7272b0]/30">
+                            <p class="text-[#b7a8bd] text-sm font-bold uppercase tracking-widest mb-2">顯示暱稱</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xl font-bold text-[#dcd5e5]">${currentNickname}</span>
+                                <button onclick="handleNicknameEdit()" class="bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] px-4 py-2 rounded-xl font-bold transition button-click-effect">
+                                    修改暱稱
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 使用者識別碼區塊 -->
+                        <div class="bg-[#090b0c]/40 p-6 rounded-2xl border border-[#2f3559]">
+                            <p class="text-[#b7a8bd] text-sm font-bold uppercase tracking-widest mb-2">安全識別碼 (UID)</p>
+                            <p class="text-[#7272b0] font-mono text-sm break-all">${userId}</p>
+                            <p class="text-[#7272b0]/60 text-xs mt-2">此為系統識別您的唯一代碼，請勿隨意洩漏。</p>
+                        </div>
+
+                        <!-- 密碼重設區塊 -->
+                        <div class="bg-red-900/10 p-6 rounded-2xl border border-red-900/30">
+                            <p class="text-red-400 text-sm font-bold uppercase tracking-widest mb-2">安全性設定</p>
+                            <button onclick="handlePasswordReset()" class="text-red-400 hover:text-red-300 font-bold transition border border-red-400/30 px-4 py-2 rounded-xl mt-2 button-click-effect">
+                                發送密碼重設信件
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-yellow-900/10 p-6 rounded-2xl border border-yellow-900/30 mt-6">
+                        <p class="text-yellow-500 text-sm font-bold uppercase tracking-widest mb-4">進階帳號設定</p>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <p class="text-[#dcd5e5] font-bold">登入信箱</p>
+                                <p class="text-[#b7a8bd] text-sm">${auth.currentUser ? auth.currentUser.email : '未知'}</p>
+                            </div>
+                            <button onclick="handleEmailUpdate()" class="text-yellow-500 hover:text-yellow-400 font-bold transition border border-yellow-500/30 px-4 py-2 rounded-xl button-click-effect">
+                                修改信箱
+                            </button>
+                        </div>
+
+                        <div class="border-t border-yellow-900/30 pt-4 mt-4">
+                            <p class="text-red-400 text-sm mb-2">危險區域 (Danger Zone)</p>
+                            <button onclick="handleAccountDeletion()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl transition button-click-effect w-full sm:w-auto">
+                                永久刪除帳號
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            else if (currentTab === 'settings') {
+                htmlContent = `
+                <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <h4 class="text-2xl font-black text-[#dcd5e5] mb-6">介面與偏好設定</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between bg-[#2f3559]/20 p-5 rounded-2xl border border-[#7272b0]/30">
+                            <div>
+                                <p class="text-[#dcd5e5] font-bold">深色主題模式</p>
+                                <p class="text-[#b7a8bd] text-sm">系統預設為深色護眼模式，無法更改。</p>
+                            </div>
+                            <div class="w-12 h-6 bg-[#86C166] rounded-full relative opacity-50 cursor-not-allowed">
+                                <div class="w-4 h-4 bg-white rounded-full absolute right-1 top-1"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between bg-[#2f3559]/20 p-5 rounded-2xl border border-[#7272b0]/30">
+                            <div>
+                                <p class="text-[#dcd5e5] font-bold">資料同步狀態</p>
+                                <p class="text-[#b7a8bd] text-sm">您的電腦端資料會自動同步至此雲端看板。</p>
+                            </div>
+                            <span class="text-[#86C166] font-bold text-sm">啟用中</span>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            else if (currentTab === 'productStatement') {
+                htmlContent = `
+                <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <h4 class="text-2xl font-black text-[#dcd5e5] mb-6">產品與科學聲明</h4>
+                    <div class="bg-[#090b0c]/40 p-6 rounded-2xl border border-[#2f3559] space-y-4 text-[#b7a8bd] leading-relaxed text-sm">
+                        <p><strong class="text-[#dcd5e5]">AI 演算免責聲明：</strong><br>本系統採用 MediaPipe 視覺技術進行姿勢分析，結果僅供參考，不具醫療診斷效力。若您有嚴重肩頸疾病，請諮詢專業醫師。</p>
+                        <p><strong class="text-[#dcd5e5]">隱私權保護：</strong><br>本軟體承諾所有影像運算皆於使用者之本地端設備完成，絕不截取或上傳任何影像畫面至雲端伺服器。</p>
+                        <p><strong class="text-[#dcd5e5]">開發團隊資訊：</strong><br>國立台南高級商業職業學校 資料處理科<br>林洛樊、翁毓琇、陳佳卉、曾靚文<br>指導老師：陳銘平 老師、葉杰士 老師</p>
+                    </div>
+                </div>`;
+            }
+            else if (currentTab === 'reportIssue') {
+                htmlContent = `
+                <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <h4 class="text-2xl font-black text-[#dcd5e5] mb-6">回報系統問題</h4>
+                    <div class="bg-[#2f3559]/20 p-6 rounded-2xl border border-[#7272b0]/30">
+                        <p class="text-[#b7a8bd] mb-4">若您在使用過程中遇到任何 Bug 或是功能建議，歡迎直接寄信與我們聯繫。</p>
+                        <!-- 將 textarea 改為信件主旨預覽 (可選) -->
+                        <p class="text-[#7272b0] text-sm mb-4">點擊下方按鈕將開啟您的郵件應用程式，請在信件中詳述您的問題。</p>
+                        <a href="mailto:thesentryai@gmail.com?subject=星崔AI 問題回報 (用戶ID: ${userId})" class="inline-block bg-[#7272b0] hover:bg-[#b7a8bd] text-[#090b0c] px-6 py-3 rounded-xl font-bold transition button-click-effect">
+                            寄信給開發團隊
+                        </a>
+                    </div>
+                </div>`;
+            }
+
+            content.innerHTML = htmlContent;
         }
+
+        // 處理暱稱編輯邏輯
+        window.handleNicknameEdit = function () {
+            const newName = prompt("請輸入新的暱稱:", currentNickname);
+            if (newName && newName.trim() !== '' && newName !== currentNickname) {
+                // 寫入 Firebase
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/profileData/mainProfile`);
+                setDoc(docRef, { nickname: newName.trim() }, { merge: true })
+                    .then(() => {
+                        alert(`暱稱已成功更新為: ${newName.trim()}`);
+                    })
+                    .catch((error) => {
+                        console.error("更新暱稱失敗:", error);
+                        alert(`更新失敗: ${error.message}`);
+                    });
+            }
+        };
+
+
+
+
+        window.handlePasswordReset = async function () {
+            const user = auth.currentUser;
+            if (!user) {
+                alert('無法獲取帳號資訊，請重新登入。');
+                return;
+            }
+
+            const email = user.email;
+            if (confirm(`確定要發送密碼重設信件至 ${email} 嗎？`)) {
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    alert(`✅ 密碼重設信件已發送至 ${email}。請檢查您的信箱！`);
+                } catch (error) {
+                    console.error("密碼重設錯誤:", error);
+                    alert(`❌ 密碼重設失敗：${error.message}`);
+                }
+            }
+        };
+
+        window.handleEmailUpdate = async function () {
+            const user = auth.currentUser;
+            if (!user) return alert("請重新登入以執行此操作。");
+
+            const newEmail = prompt("請輸入您要變更的新電子郵件地址：\n(注意：變更後您必須使用新信箱登入)", user.email);
+            if (newEmail && newEmail !== user.email) {
+                try {
+                    await updateEmail(user, newEmail);
+                    alert("✅ 信箱修改成功！\n下次請使用新信箱登入。");
+                } catch (error) {
+                    console.error("信箱修改失敗:", error);
+                    if (error.code === 'auth/requires-recent-login') {
+                        alert("❌ 為了保護您的帳號安全，請登出並「重新登入」後，再次嘗試修改信箱。");
+                    } else {
+                        alert(`❌ 修改失敗：${error.message}`);
+                    }
+                }
+            }
+        };
+
+        // 刪除帳號邏輯
+        window.handleAccountDeletion = async function () {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const confirm1 = confirm("警告：您確定要永久刪除您的星崔AI帳號嗎？此操作不可逆！");
+            if (!confirm1) return;
+
+            const confirm2 = prompt(`請輸入您的信箱以確認刪除：\n${user.email}`);
+            if (confirm2 === user.email) {
+                try {
+                    await deleteUser(user);
+                    alert("您的帳號已成功刪除。期待未來再見！");
+                    window.location.href = '../'; // 導回首頁
+                } catch (error) {
+                    console.error("帳號刪除失敗:", error);
+                    if (error.code === 'auth/requires-recent-login') {
+                        alert("❌ 基於安全考量，請登出並「重新登入」後，再次嘗試刪除帳號。");
+                    } else {
+                        alert(`❌ 刪除失敗：${error.message}`);
+                    }
+                }
+            } else if (confirm2 !== null) {
+                alert("輸入的信箱不符，取消刪除操作。");
+            }
+        };
+
+
+
+
+
 
         // 登出與 UI 事件
         document.getElementById('logout-btn-nav').onclick = async () => { await signOut(auth); window.location.href = '../'; };

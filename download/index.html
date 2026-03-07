@@ -72,6 +72,30 @@
             border-bottom: 1px solid var(--border-soft);
         }
 
+        .cta-section {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #fff;
+            color: var(--bg-dark);
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 16px 50px;
+            border-radius: 4px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            background: var(--accent);
+            box-shadow: 0 15px 40px rgba(114, 114, 176, 0.3);
+        }
+
         /* Logo 樣式 */
         .logo-link {
             display: flex;
@@ -414,6 +438,25 @@
                     <div>
                         <strong style="display:block; color: #fff; margin-bottom: 5px;">儲存空間</strong>
                         <p style="font-size: 14px;">安裝所需空間：2GB</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="steps-container">
+                <h3 style="font-size: 24px; margin-bottom: 20px; color: #fff;">授權碼申請</h3>
+
+                <div class="step-item">
+                    <div class="step-num">🔐</div>
+                    <div>
+                        <strong
+                            style="display:block; color: #fff; margin-bottom: 5px;">當您在安裝時被要求輸入密碼才能繼續安裝，代表該版本只有授權人員才能使用<br>不過別擔心，只要經過登記就可以成為授權人員<br>點選下方按鈕前往授權登記系統就可以馬上取得授權密碼囉</strong>
+                        <section class="cta-section">
+
+                            <a href="authorization/" id="main-cta" class="cta-button">
+                                前往授權系統
+                            </a>
+                            <p style="font-size: 14px;"><br>若無法正常開啟，請嘗試使用無痕模式開啟</p>
+                        </section>
                     </div>
                 </div>
             </div>
