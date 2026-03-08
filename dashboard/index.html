@@ -199,7 +199,9 @@
             </div>
 
             <nav class="hidden lg:flex items-center space-x-2">
+                <a href="../" class="nav-btn px-4 py-2 rounded-xl font-medium button-click-effect ">網站首頁</a>
                 <div class="dropdown">
+
                     <button class="nav-btn px-4 py-2 rounded-xl font-medium flex items-center button-click-effect">
                         帳號管理
                         <svg class="ml-1.5 w-4 h-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,7 +272,7 @@
         <div id="view-dashboard"
             class="content-view active glass-card p-10 rounded-[2.5rem] max-w-6xl mx-auto shadow-2xl">
             <h2 class="text-4xl font-black text-[#dcd5e5] mb-2 tracking-tight">歡迎回來</h2>
-            <p class="text-[#b7a8bd] mb-10 text-lg">系統運作正常，隨時準備協助您的 AI 任務。</p>
+            <p class="text-[#b7a8bd] mb-10 text-lg">您隨時可以查看專注紀錄。</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="bg-[#2f3559]/40 p-8 rounded-3xl border border-[#7272b0]/30 shadow-xl">
                     <h3 class="font-black text-xl text-[#dcd5e5] mb-6">系統狀態</h3>
@@ -300,7 +302,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
                 <div>
                     <h2 class="text-4xl font-black text-[#dcd5e5] mb-2">我的專注數據</h2>
-                    <p class="text-[#b7a8bd] text-lg">點擊下方卡片，查看詳細的 AI 趨勢分析。</p>
+                    <p class="text-[#b7a8bd] text-lg">點擊下方卡片，查看近期專注的趨勢分析。</p>
                 </div>
                 <div class="mt-4 md:mt-0 px-6 py-3 bg-[#2f3559] rounded-2xl border border-[#7272b0]/30">
                     <span class="text-[#dcd5e5] font-bold">總專注次數：</span>
@@ -344,7 +346,7 @@
             <!-- 新增：圖表展示區域 -->
             <div class="bg-[#090b0c]/40 p-6 rounded-3xl border border-[#2f3559] mb-12">
                 <div class="flex justify-between items-center mb-6 px-2">
-                    <h3 id="chart-display-title" class="font-black text-xl text-[#dcd5e5]">數據走勢：累計時長</h3>
+                    <h3 id="chart-display-title" class="font-black text-xl text-[#dcd5e5]">累計時長</h3>
                     <span class="text-[#b7a8bd] text-xs font-bold uppercase tracking-widest">最近 7 筆數據</span>
                 </div>
                 <div class="relative h-[300px] w-full">
@@ -386,7 +388,30 @@
                 class="bg-[#090b0c]/40 p-10 rounded-3xl border border-[#2f3559] min-h-[400px]"></div>
         </div>
     </main>
+    <!-- 專注詳情彈窗 (Session Detail Modal) -->
+    <div id="detail-modal"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-[#090b0c]/95 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-500">
+        <div
+            class="glass-card p-8 rounded-[2.5rem] max-w-2xl w-[95%] shadow-2xl border border-[#7272b0]/30 overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-start mb-8">
+                <h3 class="text-3xl font-black text-[#dcd5e5]">專注詳情報告</h3>
+                <button onclick="closeDetailModal()" class="text-[#b7a8bd] hover:text-white transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
 
+            <div id="modal-detail-content" class="space-y-8">
+                <!-- 這裡由 JS 動態填充 -->
+            </div>
+
+            <button onclick="closeDetailModal()"
+                class="w-full mt-10 py-4 bg-[#2f3559] hover:bg-[#7272b0] text-[#dcd5e5] rounded-2xl font-black transition-all">關閉視窗</button>
+        </div>
+    </div>
     <!-- 登入警告 -->
     <div id="login-alert-modal"
         class="fixed inset-0 z-[999] flex items-center justify-center bg-[#090b0c]/90 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
@@ -519,34 +544,31 @@
             }, (err) => console.error("Firestore Listen Error:", err));
         }
 
-        // 同步修正 renderHistoryList 裡的欄位名稱
         function renderHistoryList(sessions) {
             const list = document.getElementById('history-list-container');
             if (sessions.length === 0) {
                 list.innerHTML = `<div class="p-10 text-center text-[#b7a8bd]">目前尚無專注數據...</div>`;
             } else {
-                list.innerHTML = sessions.slice(0, 5).map(s => {
-                    // 確保日期解析不會因為字串格式而出錯
+                // 移除 .slice(0, 5)，改為全顯示
+                list.innerHTML = sessions.map((s, index) => {
                     const dateObj = new Date(s.start_time);
-                    const dateStr = isNaN(dateObj) ? s.start_time : dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const dateStr = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     const modeText = s.mode_used === 'FRONTAL' ? '正面偵測' : '側身偵測';
 
                     return `
-                    <div class="px-8 py-6 hover:bg-[#2f3559]/10 transition group flex items-center justify-between border-b border-[#2f3559]">
+                    <div class="px-8 py-6 hover:bg-[#2f3559]/20 transition group flex items-center justify-between border-b border-[#2f3559]/50">
                         <div class="flex items-center space-x-6">
                             <div class="w-12 h-12 bg-[#2f3559]/40 rounded-xl flex items-center justify-center border border-[#7272b0]/20 text-[#dcd5e5]">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                             </div>
                             <div>
                                 <p class="text-[#dcd5e5] font-black">${dateStr}</p>
-                                <p class="text-[#b7a8bd] text-sm">時長：${s.duration_minutes} 分鐘 · 模式：${modeText}</p>
+                                <p class="text-[#b7a8bd] text-sm">時長：${s.duration_minutes} 分鐘 · ${modeText}</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${s.is_perfect_session ? 'bg-[#86C166]/20 text-[#86C166]' : 'bg-red-400/20 text-red-400'}">
-                                ${s.is_perfect_session ? '完美專注' : `糾正 ${s.total_slouch_count} 次`}
-                            </span>
-                        </div>
+                        <button onclick="showSessionDetail(${index})" class="px-5 py-2 bg-[#7272b0]/20 hover:bg-[#7272b0] text-[#dcd5e5] hover:text-[#090b0c] rounded-xl text-xs font-black transition-all button-click-effect">
+                            數據詳情
+                        </button>
                     </div>`;
                 }).join('');
             }
@@ -575,25 +597,25 @@
                     datasetLabel = '專注時長 (分鐘)';
                     dataPoints = recentSessions.map(s => s.duration_minutes);
                     themeColor = '#7272b0';
-                    document.getElementById('chart-display-title').textContent = '數據走勢：累計時長';
+                    document.getElementById('chart-display-title').textContent = '累計時長';
                     break;
                 case 'alerts':
                     datasetLabel = '姿勢糾正 (次數)';
                     dataPoints = recentSessions.map(s => s.total_slouch_count);
                     themeColor = '#b7a8bd';
-                    document.getElementById('chart-display-title').textContent = '數據走勢：姿勢糾正次數';
+                    document.getElementById('chart-display-title').textContent = '姿勢糾正次數';
                     break;
                 case 'avg':
                     datasetLabel = '每小時警告數';
                     dataPoints = recentSessions.map(s => s.duration_minutes > 0 ? (s.total_slouch_count / (s.duration_minutes / 60)).toFixed(1) : 0);
                     themeColor = '#dcd5e5';
-                    document.getElementById('chart-display-title').textContent = '數據走勢：每小時警告頻率';
+                    document.getElementById('chart-display-title').textContent = '每小時警告頻率';
                     break;
                 case 'rate':
                     datasetLabel = '完美狀態 (100=是)';
                     dataPoints = recentSessions.map(s => s.is_perfect_session ? 100 : 0);
                     themeColor = '#86C166';
-                    document.getElementById('chart-display-title').textContent = '數據走勢：完美專注分布';
+                    document.getElementById('chart-display-title').textContent = '完美專注分布';
                     break;
             }
 
@@ -687,6 +709,100 @@
             }, 350);
 
             document.getElementById('sidebar').classList.remove('active');
+        };
+
+        // 詳情彈窗控制
+        window.showSessionDetail = function (index) {
+            const s = globalSessionsData[index];
+            const content = document.getElementById('modal-detail-content');
+
+            // 判斷是否為短時長數據 (低於 5 分鐘)
+            const isShortData = s.duration_minutes < 5;
+
+            // 計算精確時分秒
+            const totalSeconds = Math.round(s.duration_minutes * 60);
+            const hrs = Math.floor(totalSeconds / 3600);
+            const mins = Math.floor((totalSeconds % 3600) / 60);
+            const secs = totalSeconds % 60;
+            const timeStr = `${hrs > 0 ? hrs + '小時 ' : ''}${mins}分 ${secs}秒`;
+
+            // 計算 CPH
+            const hoursFloat = s.duration_minutes / 60;
+            const cph = (s.total_slouch_count / hoursFloat).toFixed(1);
+
+            // 基礎評級邏輯
+            let rating = { label: '優良', color: '#86C166', advice: '您的表現非常出色！姿勢極其穩定，這有助於長期的專注力維持與頸部健康。' };
+            if (cph > 6 && cph <= 15) {
+                rating = { label: '注意', color: '#F1C40F', advice: '您的姿勢出現了些微偏移。這通常是生理疲勞的初步訊號，建議進行簡單的伸展。' };
+            } else if (cph > 15) {
+                rating = { label: '風險', color: '#E74C3C', advice: '警報頻率過高。這代表您的肌肉已過度疲勞，請立即起身活動 10 分鐘，避免造成慢性損傷。' };
+            }
+
+            // 如果是短時長數據，微調標籤
+            const ratingLabel = isShortData ? `${rating.label} <small class="text-[10px] opacity-60">(初步)</small>` : rating.label;
+
+            content.innerHTML = `
+                <!-- 第一區：基本標籤 -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-[#090b0c]/40 p-5 rounded-2xl border border-[#2f3559]">
+                        <p class="text-[#b7a8bd] text-[10px] font-bold uppercase tracking-widest mb-1">專注模式</p>
+                        <p class="text-xl font-black text-[#dcd5e5]">${s.mode_used === 'FRONTAL' ? '正面 (側彎檢查)' : '側面 (烏龜頸檢查)'}</p>
+                    </div>
+                    <div class="bg-[#090b0c]/40 p-5 rounded-2xl border border-[#2f3559]">
+                        <p class="text-[#b7a8bd] text-[10px] font-bold uppercase tracking-widest mb-1">品質評級</p>
+                        <p class="text-xl font-black" style="color: ${rating.color}">${ratingLabel}</p>
+                    </div>
+                </div>
+
+                <!-- 【新增】短時長警示區塊 -->
+                ${isShortData ? `
+                <div class="bg-amber-900/20 border border-amber-500/40 p-5 rounded-2xl flex items-start space-x-4">
+                    <div class="p-2 bg-amber-500/20 rounded-lg text-amber-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h5 class="text-amber-500 font-black text-sm">統計樣本不足</h5>
+                        <p class="text-[#b7a8bd] text-xs leading-relaxed mt-1">此次專注時長不足 5 分鐘。基於科學統計效度，當前數據僅供瞬時參考，不建議作為長期姿勢穩定性評估之依據。</p>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- 數據展示區 -->
+                <div class="bg-[#2f3559]/20 p-8 rounded-3xl border border-[#7272b0]/30 shadow-inner">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-[#dcd5e5] font-bold">精確專注時長</span>
+                        <span class="text-2xl font-black text-white">${timeStr}</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-[#dcd5e5] font-bold">姿勢糾正總次數</span>
+                        <span class="text-2xl font-black text-red-400">${s.total_slouch_count} 次</span>
+                    </div>
+                    <div class="pt-6 border-t border-[#7272b0]/20 flex items-center justify-between">
+                        <div>
+                            <span class="text-[#dcd5e5] font-bold">每小時糾正頻率 (CPH)</span>
+                            <p class="text-[10px] text-[#b7a8bd]">Normalized Frequency</p>
+                        </div>
+                        <span class="text-3xl font-black text-[#7272b0]">${cph} <small class="text-xs">次/時</small></span>
+                    </div>
+                </div>
+
+                <!-- 建議區塊 -->
+                <div class="p-6 rounded-2xl border-l-4" style="border-color: ${rating.color}; background: ${rating.color}10">
+                    <h5 class="font-black text-[#dcd5e5] mb-2 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        系統科學建議
+                    </h5>
+                    <p class="text-sm text-[#b7a8bd] leading-relaxed">${rating.advice}</p>
+                </div>
+            `;
+
+            const modal = document.getElementById('detail-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        };
+
+        window.closeDetailModal = function () {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
         };
 
         // 渲染 Profile

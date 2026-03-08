@@ -5,19 +5,14 @@
     <link rel="icon" type="image/x-icon" href="../images/logo_w.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>星崔AI | 會員登入</title>
+    <title>星崔AI | 找回密碼</title>
     <style>
         :root {
             --bg-dark: #090b0c;
-            /* 極深底色 */
             --bg-deep: #2f3559;
-            /* 深藍調 */
             --primary: #7272b0;
-            /* 灰紫主色 */
             --accent: #b7a8bd;
-            /* 灰調副色 */
             --text-light: #dcd5e5;
-            /* 亮灰文字 */
             --glass: rgba(9, 11, 12, 0.65);
             --border-soft: rgba(183, 168, 189, 0.2);
         }
@@ -41,8 +36,8 @@
             color: var(--text-light);
         }
 
-        /* 登入卡片 */
-        .login-card {
+        /* 忘記密碼卡片 */
+        .reset-card {
             position: relative;
             z-index: 10;
             width: 420px;
@@ -53,20 +48,16 @@
             border-radius: 40px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             text-align: center;
-            cursor: default;
         }
 
-        /* 懸浮發光效果 */
-        .login-card:hover {
+        .reset-card:hover {
             border-color: var(--primary);
-            box-shadow: 0 0 30px rgba(114, 114, 176, 0.4),
-                inset 0 0 15px rgba(114, 114, 176, 0.2);
+            box-shadow: 0 0 30px rgba(114, 114, 176, 0.4);
             transform: translateY(-5px);
         }
 
-        /* 標題區域 */
         .title-group {
-            margin-bottom: 45px;
+            margin-bottom: 40px;
         }
 
         h2 {
@@ -75,7 +66,6 @@
             color: #ffffff;
             font-weight: 700;
             margin-bottom: 6px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
         }
 
         .subtitle {
@@ -86,15 +76,19 @@
             opacity: 0.8;
         }
 
-        /* 輸入框組 */
+        p.instruction {
+            font-size: 14px;
+            color: var(--accent);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
         .input-group {
-            position: relative;
             margin-bottom: 24px;
             width: 100%;
         }
 
-        input[type="email"],
-        input[type="password"] {
+        input[type="email"] {
             width: 100%;
             padding: 16px 22px;
             background: rgba(255, 255, 255, 0.05);
@@ -103,93 +97,56 @@
             outline: none;
             color: #fff;
             font-size: 15px;
-            letter-spacing: 1px;
         }
 
         input:focus {
             border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.08);
             box-shadow: 0 0 15px rgba(114, 114, 176, 0.3);
         }
 
-        input::placeholder {
-            color: rgba(224, 224, 229, 0.3);
-        }
-
-        /* 登入按鈕 */
-        .btn-login {
+        .btn-reset {
             width: 100%;
             padding: 16px;
-            margin-top: 20px;
             background: var(--primary);
             border: none;
             border-radius: 15px;
             color: #fff;
             font-size: 18px;
             font-weight: 600;
-            letter-spacing: 8px;
+            letter-spacing: 4px;
             cursor: pointer;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .btn-login:hover {
+        .btn-reset:hover {
             background: #8484c4;
-            box-shadow: 0 12px 25px rgba(114, 114, 176, 0.4);
-            letter-spacing: 10px;
+            letter-spacing: 6px;
         }
 
-        .btn-login:disabled {
+        .btn-reset:disabled {
             background: #3a3a4a;
-            color: #777;
             cursor: not-allowed;
         }
 
-        /* 選項連結區域 */
-        .options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 35px;
+        .back-to-login {
+            margin-top: 30px;
+            display: block;
             font-size: 13px;
             color: var(--accent);
-        }
-
-        .options div {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .options a {
-            color: var(--accent);
             text-decoration: none;
-            cursor: pointer;
             opacity: 0.7;
         }
 
-        .options a:hover {
+        .back-to-login:hover {
             opacity: 1;
-            color: var(--text-light);
+            color: #fff;
             text-decoration: underline;
         }
 
-        .options label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            opacity: 0.7;
-        }
-
-        .options label:hover {
-            opacity: 1;
-        }
-
-        /* 訊息顯示區 */
         #message {
-            margin-top: 25px;
-            min-height: 20px;
+            margin-top: 20px;
             font-size: 13px;
+            min-height: 20px;
         }
 
         .error {
@@ -205,7 +162,7 @@
         }
 
         @media (max-width: 480px) {
-            .login-card {
+            .reset-card {
                 width: 90%;
                 padding: 50px 30px;
             }
@@ -215,55 +172,44 @@
 
 <body>
 
-    <div class="login-card">
+    <div class="reset-card">
         <div class="title-group">
-            <h2>登入</h2>
-            <div class="subtitle">LOGIN</div>
+            <h2>找回密碼</h2>
+            <div class="subtitle">FORGET PASSWORD</div>
         </div>
+
+        <p class="instruction">請輸入您的註冊電子郵件，<br>我們將發送重設密碼的連結給您。</p>
 
         <div class="input-group">
-            <input type="email" id="login-email" placeholder="電子郵件" required>
+            <input type="email" id="reset-email" placeholder="電子郵件" required>
         </div>
 
-        <div class="input-group">
-            <input type="password" id="login-password" placeholder="密碼" required>
-        </div>
-
-        <button class="btn-login" id="loginBtn">確認進入</button>
+        <button class="btn-reset" id="resetBtn">發送驗證郵件</button>
 
         <div id="message"></div>
 
-        <!-- 這裡已插入你要求的連結區塊 -->
-        <div class="options">
-            <label><input type="checkbox" id="remember"> 記住身分</label>
-            <div>
-                <a href="../signup/">註冊帳號</a> |
-                <a href="../forgetpassword/">找回密碼</a>
-            </div>
-        </div>
+        <a href="../login/" class="back-to-login">返回登入</a>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-        // Firebase 配置
+        // Firebase 配置 (與登入頁相同)
         const firebaseConfig = {
             apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
             authDomain: "workai-1d692.firebaseapp.com",
             projectId: "workai-1d692",
             storageBucket: "workai-1d692.firebasestorage.app",
             messagingSenderId: "156453625217",
-            appId: "1:156453625217:web:f04e2da964ddb6d449dc80",
-            measurementId: "G-71NV0L4CGS"
+            appId: "1:156453625217:web:7ef3a3642481c52449dc80"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        const emailInput = document.getElementById('login-email');
-        const passwordInput = document.getElementById('login-password');
-        const loginBtn = document.getElementById('loginBtn');
+        const emailInput = document.getElementById('reset-email');
+        const resetBtn = document.getElementById('resetBtn');
         const messageDiv = document.getElementById('message');
 
         function showMessage(text, type) {
@@ -271,40 +217,33 @@
             messageDiv.className = type;
         }
 
-        loginBtn.addEventListener('click', async () => {
-            const email = emailInput.value;
-            const password = passwordInput.value;
+        resetBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
 
-            if (!email || !password) {
-                showMessage('請完整輸入帳號與密碼。', 'error');
+            if (!email) {
+                showMessage('請輸入您的電子郵件位址。', 'error');
                 return;
             }
 
-            loginBtn.disabled = true;
-            showMessage('正在驗證憑證...', 'info');
+            resetBtn.disabled = true;
+            showMessage('正在聯繫中樞發送郵件...', 'info');
 
             try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+                // Firebase 發送重設密碼郵件
+                await sendPasswordResetEmail(auth, email);
 
-                if (!user.emailVerified) {
-                    showMessage('此帳號尚未驗證，請至信箱點擊連結。', 'error');
-                    loginBtn.disabled = false;
-                    return;
-                }
-
-                showMessage('認證成功，正在導向控制台...', 'success');
-                setTimeout(() => {
-                    // 登入成功後跳轉到主頁或控制台
-                    window.location.href = '../dashboard/';
-                }, 1200);
+                showMessage('郵件已成功發送！請檢查您的信箱。', 'success');
+                // 成功後將按鈕變成導向登入
+                resetBtn.innerText = "回到登入";
+                resetBtn.onclick = () => window.location.href = '../login/';
+                resetBtn.disabled = false;
 
             } catch (error) {
-                loginBtn.disabled = false;
+                resetBtn.disabled = false;
                 console.error(error);
-                let errorMsg = '登入失敗，請確認您的帳號密碼。';
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                    errorMsg = '帳號或密碼輸入不正確。';
+                let errorMsg = '發送失敗，請確認郵件格式是否正確。';
+                if (error.code === 'auth/user-not-found') {
+                    errorMsg = '找不到與此郵件關聯的帳號。';
                 }
                 showMessage(errorMsg, 'error');
             }
