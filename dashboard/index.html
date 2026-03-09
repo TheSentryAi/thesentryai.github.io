@@ -357,7 +357,6 @@
             <div class="bg-[#090b0c]/40 rounded-3xl border border-[#2f3559] overflow-hidden">
                 <div class="px-8 py-6 border-b border-[#2f3559] flex justify-between items-center">
                     <h3 class="font-black text-xl text-[#dcd5e5]">歷史紀錄</h3>
-                    <span class="text-[#b7a8bd] text-sm font-mono">顯示最近 5 筆</span>
                 </div>
                 <div id="history-list-container" class="divide-y divide-[#2f3559]">
                     <div class="p-10 text-center text-[#b7a8bd]">目前尚無專注數據...</div>
@@ -436,10 +435,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 
         // 2. 認證相關 (把所有需要的功能寫在同一個大括號裡，絕對不要寫兩次 import ... from firebase-auth.js)
-        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail, updateEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, sendPasswordResetEmail, verifyBeforeUpdateEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // 3. 資料庫相關
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, where, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
@@ -479,6 +478,22 @@
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     userId = user.uid;
+
+                    // 🔒 1. 檢查是否被管理員停權 (The Guard)
+                    const userRef = doc(db, `artifacts/${appId}/users/${userId}/profileData/mainProfile`);
+                    const userSnap = await getDoc(userRef);
+
+                    if (userSnap.exists() && userSnap.data().status === 'banned') {
+                        await signOut(auth); // 強制登出
+                        alert("⚠️ 您的帳號目前已被系統管理員停權。請聯繫客服(thesentryai@gmail.com)。");
+                        window.location.href = '../login/';
+                        return;
+                    }
+
+                    // 🔄 2. 同步信箱到資料庫 (讓 Admin 可以看到)
+                    await setDoc(userRef, { email: user.email }, { merge: true });
+
+                    // 正常進入系統的邏輯
                     document.getElementById('auth-status').textContent = '已連線';
                     document.getElementById('user-info').textContent = userId;
                     setupNicknameListener(userId);
@@ -1004,17 +1019,23 @@
             const user = auth.currentUser;
             if (!user) return alert("請重新登入以執行此操作。");
 
-            const newEmail = prompt("請輸入您要變更的新電子郵件地址：\n(注意：變更後您必須使用新信箱登入)", user.email);
+            const newEmail = prompt("請輸入您要變更的「新」電子郵件地址：\n(系統將會發送驗證信至該信箱)", user.email);
+
             if (newEmail && newEmail !== user.email) {
                 try {
-                    await updateEmail(user, newEmail);
-                    alert("✅ 信箱修改成功！\n下次請使用新信箱登入。");
+                    // 使用新版的驗證再更新 API
+                    await verifyBeforeUpdateEmail(user, newEmail);
+                    alert(`✅ 驗證信已發送至 ${newEmail}！\n\n請前往該信箱點擊驗證連結。在您點擊連結之前，您原先的登入信箱不會改變。`);
                 } catch (error) {
                     console.error("信箱修改失敗:", error);
                     if (error.code === 'auth/requires-recent-login') {
-                        alert("❌ 為了保護您的帳號安全，請登出並「重新登入」後，再次嘗試修改信箱。");
+                        alert("❌ 基於安全考量，這項操作需要您「剛登入」的狀態。\n請先登出並重新登入後，再次執行此操作。");
+                    } else if (error.code === 'auth/invalid-email') {
+                        alert("❌ 信箱格式不正確。");
+                    } else if (error.code === 'auth/email-already-in-use') {
+                        alert("❌ 該信箱已經被其他帳號使用了。");
                     } else {
-                        alert(`❌ 修改失敗：${error.message}`);
+                        alert(`❌ 操作失敗：${error.message}`);
                     }
                 }
             }

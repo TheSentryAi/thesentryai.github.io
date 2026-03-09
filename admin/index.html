@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE SENTRY AI | 系統管理平台</title>
+    <meta name="robots" content="noindex, nofollow">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --bg-panel: #0a0b0f;
+            --gold: #d4af37;
+            --red: #e63946;
+            --green: #4ade80;
+            --text-main: #e0e0e0;
+            --text-muted: #8a8d98;
+            --border: #2a2d3d;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        .admin-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .tab-btn {
+            transition: 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: #11131a;
+            padding: 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-main);
+        }
+
+        .btn-action:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .btn-danger:hover {
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .blur-uid {
+            filter: blur(4px);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .blur-uid:hover,
+        .blur-uid.revealed {
+            filter: blur(0);
+            color: var(--gold);
+        }
+    </style>
+</head>
+
+<body class="flex h-screen">
+
+    <!-- 登入視圖 -->
+    <div id="login-view"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg-dark)] bg-opacity-95 backdrop-blur-md">
+        <div class="admin-card p-10 text-center max-w-md w-full">
+            <h1 class="text-3xl font-black tracking-widest text-[var(--gold)] mb-2">SENTRY COMMAND</h1>
+            <p class="text-[var(--text-muted)] text-sm mb-10">僅限授權之系統管理員登入</p>
+            <button id="google-login-btn"
+                class="w-full py-4 bg-white text-black font-bold rounded-lg flex items-center justify-center gap-3 hover:bg-gray-200 transition">
+                <img src="https://www.google.com/favicon.ico" class="w-5 h-5"> 使用 Google 驗證身分
+            </button>
+            <p id="login-error" class="text-[var(--red)] mt-4 text-sm hidden"></p>
+        </div>
+    </div>
+
+    <!-- 側邊欄 -->
+    <aside class="w-64 bg-[var(--bg-panel)] border-r border-[var(--border)] flex flex-col hidden" id="sidebar">
+        <div class="p-6 border-b border-[var(--border)]">
+            <h2 class="text-xl font-black text-white tracking-widest">SENTRY <span
+                    class="text-[var(--gold)]">ADMIN</span></h2>
+            <p id="admin-email-display" class="text-[10px] text-[var(--text-muted)] mt-1 truncate">Loading...</p>
+        </div>
+        <nav class="flex-1 py-4 flex flex-col">
+            <button onclick="switchTab('users')" id="tab-users"
+                class="tab-btn active px-6 py-4 text-left font-bold text-[var(--text-muted)] hover:text-white">👤
+                會員清單管理</button>
+            <button onclick="switchTab('records')" id="tab-records"
+                class="tab-btn px-6 py-4 text-left font-bold text-[var(--text-muted)] hover:text-white">📊
+                全站專注紀錄</button>
+        </nav>
+        <div class="p-6 border-t border-[var(--border)]">
+            <button id="logout-btn"
+                class="w-full py-2 border border-[var(--red)] text-[var(--red)] rounded hover:bg-[var(--red)] hover:text-white transition font-bold text-sm">系統登出</button>
+        </div>
+    </aside>
+
+    <!-- 主內容區 -->
+    <main class="flex-1 overflow-hidden flex flex-col hidden" id="main-content">
+        <header
+            class="h-20 bg-[var(--bg-panel)] border-b border-[var(--border)] flex items-center px-8 justify-between">
+            <h3 id="page-title" class="text-xl font-bold">會員清單管理</h3>
+            <span class="text-xs font-mono text-[var(--green)]">● DATABASE CONNECTED</span>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8">
+            <!-- 會員管理 Tab -->
+            <div id="view-users" class="view-section active">
+                <div class="admin-card overflow-hidden">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>用戶 UID (點擊顯示)</th>
+                                <th>電子郵件 / 暱稱</th>
+                                <th>帳號狀態</th>
+                                <th>管理操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                            <tr>
+                                <td colspan="4" class="text-center py-8">掃描資料庫中...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 全站紀錄 Tab -->
+            <div id="view-records" class="view-section">
+                <div class="admin-card overflow-hidden">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>時間 / 用戶 UID</th>
+                                <th>偵測模式</th>
+                                <th>專注時長</th>
+                                <th>警告次數</th>
+                                <th>資料庫操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="record-table-body">
+                            <tr>
+                                <td colspan="5" class="text-center py-8">讀取全站紀錄中...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 多功能彈窗 (Modal) -->
+    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 hidden">
+        <div class="admin-card p-8 max-w-lg w-full relative max-h-[90vh] overflow-y-auto border border-[var(--gold)]">
+            <button onclick="closeModal()"
+                class="absolute top-4 right-4 text-[var(--text-muted)] hover:text-[var(--red)] text-xl font-bold">✖</button>
+            <h3 id="modal-title" class="text-2xl font-bold text-[var(--gold)] mb-6 tracking-wider">標題</h3>
+            <div id="modal-content" class="text-sm leading-relaxed">內容</div>
+            <div id="modal-actions" class="mt-8 flex justify-end gap-3 hidden border-t border-[var(--border)] pt-4">
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase 邏輯 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getFirestore, collectionGroup, collection, getDocs, doc, setDoc, deleteDoc, updateDoc, query } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
+            authDomain: "workai-1d692.firebaseapp.com",
+            projectId: "workai-1d692",
+            storageBucket: "workai-1d692.firebasestorage.app",
+            messagingSenderId: "156453625217",
+            appId: "1:156453625217:web:7ef3a3642481c52449dc80"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        // 🚨【非常重要】請把這裡換成你用來測試登入的 Google 信箱
+        const ADMIN_EMAILS = [
+            "capqq82@gmail.com", "thesentryai@gmail.com"
+        ];
+
+        let globalRecordsData = [];
+
+        // --- 1. 登入與基礎 UI 控制 ---
+        document.getElementById('google-login-btn').onclick = async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                if (!ADMIN_EMAILS.includes(result.user.email)) {
+                    document.getElementById('login-error').textContent = "⚠️ 存取拒絕：您的信箱不在白名單中！";
+                    document.getElementById('login-error').classList.remove('hidden');
+                    await signOut(auth);
+                }
+            } catch (error) { console.error("登入失敗", error); }
+        };
+
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user && ADMIN_EMAILS.includes(user.email)) {
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('sidebar').classList.remove('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                document.getElementById('main-content').classList.add('flex');
+                document.getElementById('admin-email-display').textContent = user.email;
+
+                loadUsers();
+                loadRecords();
+            } else {
+                document.getElementById('login-view').classList.remove('hidden');
+                document.getElementById('sidebar').classList.add('hidden');
+                document.getElementById('main-content').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('flex');
+            }
+        });
+
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active'));
+            document.getElementById('view-' + tab).classList.add('active');
+            document.getElementById('page-title').textContent = tab === 'users' ? '會員清單管理' : '全站專注紀錄';
+        };
+
+        // --- 2. 會員清單模組 ---
+        async function loadUsers() {
+            const tbody = document.getElementById('user-table-body');
+            try {
+                const querySnapshot = await getDocs(collectionGroup(db, 'profileData'));
+                let html = '';
+                const userMap = new Map();
+
+                querySnapshot.forEach(docSnap => {
+                    const pathSegments = docSnap.ref.path.split('/');
+                    const uid = pathSegments[pathSegments.indexOf('users') + 1];
+                    const data = docSnap.data();
+                    if (!userMap.has(uid)) {
+                        userMap.set(uid, {
+                            nickname: data.nickname || '未設定',
+                            status: data.status || 'active',
+                            email: data.email || '需透過信箱功能找回'
+                        });
+                    }
+                });
+
+                userMap.forEach((userData, uid) => {
+                    const isBanned = userData.status === 'banned';
+                    const statusHtml = isBanned ? `<span class="text-[var(--red)] font-bold">已封鎖</span>` : `<span class="text-[var(--green)]">正常</span>`;
+
+                    html += `
+                        <tr>
+                            <td class="font-mono"><span class="blur-uid" onclick="this.classList.toggle('revealed')">${uid}</span></td>
+                            <td><strong class="text-white">${userData.nickname}</strong><br><span class="text-xs text-[var(--text-muted)]">${userData.email}</span></td>
+                            <td>${statusHtml}</td>
+                            <td class="space-x-2">
+                                <button onclick="resetUserPassword('${userData.email}')" class="btn-action">重設密碼</button>
+                                <button onclick="toggleUserStatus('${uid}', ${isBanned})" class="btn-action ${isBanned ? '' : 'btn-danger'}">${isBanned ? '解除封鎖' : '強制停權'}</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html || `<tr><td colspan="4" class="text-center">尚無資料</td></tr>`;
+            } catch (error) { tbody.innerHTML = `<tr><td colspan="4" class="text-[var(--red)] text-center">讀取失敗</td></tr>`; }
+        }
+
+        window.resetUserPassword = async (email) => {
+            if (email === '需透過信箱功能找回' || !email) return alert("無信箱紀錄！");
+            if (confirm(`發送重設密碼信件至：${email}？`)) {
+                try { await sendPasswordResetEmail(auth, email); alert("發送成功！"); } catch (e) { alert("失敗: " + e.message); }
+            }
+        };
+
+        window.toggleUserStatus = async (uid, isBanned) => {
+            if (confirm(`確定要 ${isBanned ? '解鎖' : '封鎖'} 此帳號嗎？`)) {
+                try {
+                    await setDoc(doc(db, `artifacts/${firebaseConfig.projectId}/users/${uid}/profileData/mainProfile`), { status: isBanned ? 'active' : 'banned' }, { merge: true });
+                    alert("狀態已更新！"); loadUsers();
+                } catch (e) { alert("操作失敗: " + e.message); }
+            }
+        };
+
+        // --- 3. 專注紀錄模組 ---
+        async function loadRecords() {
+            const tbody = document.getElementById('record-table-body');
+            try {
+                const querySnapshot = await getDocs(query(collection(db, '專注記錄列表資料來源')));
+                globalRecordsData = [];
+                querySnapshot.forEach(d => { globalRecordsData.push({ id: d.id, ...d.data() }); });
+                globalRecordsData.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
+
+                let html = '';
+                globalRecordsData.forEach((data, index) => {
+                    html += `
+                        <tr>
+                            <td><div class="text-[var(--text-main)]">${new Date(data.start_time).toLocaleString()}</div><div class="text-xs text-[var(--text-muted)] font-mono truncate w-32">UID: ${data.user_id}</div></td>
+                            <td>${data.mode_used === 'FRONTAL' ? '正面(肩膀)' : '側面(烏龜頸)'}</td>
+                            <td class="font-bold text-[var(--gold)]">${data.duration_minutes} min</td>
+                            <td class="${data.total_slouch_count > 10 ? 'text-[var(--red)] font-bold' : ''}">${data.total_slouch_count} 次</td>
+                            <td class="space-x-2">
+                                <button onclick="viewRecordDetail(${index})" class="btn-action text-[var(--gold)] border-[var(--gold)]">詳情</button>
+                                <button onclick="openEditForm(${index})" class="btn-action">修改</button>
+                                <button onclick="deleteRecord('${data.id}')" class="btn-action btn-danger">刪除</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html || `<tr><td colspan="5" class="text-center">無紀錄</td></tr>`;
+            } catch (error) { tbody.innerHTML = `<tr><td colspan="5" class="text-[var(--red)] text-center">讀取失敗</td></tr>`; }
+        }
+
+        window.viewRecordDetail = (index) => {
+            const data = globalRecordsData[index];
+            document.getElementById('modal-title').textContent = "🔍 紀錄詳情";
+            document.getElementById('modal-content').innerHTML = `
+                <div class="space-y-4 bg-[#11131a] p-6 rounded-lg border border-[var(--border)]">
+                    <div class="flex justify-between border-b border-[#333] pb-2"><span class="text-[var(--text-muted)]">文檔 ID</span><span class="font-mono text-[var(--gold)]">${data.id}</span></div>
+                    <div class="flex justify-between border-b border-[#333] pb-2"><span class="text-[var(--text-muted)]">用戶 UID</span><span class="font-mono text-white">${data.user_id}</span></div>
+                    <div class="flex justify-between border-b border-[#333] pb-2"><span class="text-[var(--text-muted)]">時間</span><span class="text-white">${new Date(data.start_time).toLocaleString()}</span></div>
+                    <div class="flex justify-between border-b border-[#333] pb-2"><span class="text-[var(--text-muted)]">時長</span><span class="text-[var(--gold)] font-bold">${data.duration_minutes} 分鐘</span></div>
+                    <div class="flex justify-between pt-2"><span class="text-[var(--text-muted)]">警告次數</span><span class="text-[var(--red)] font-bold">${data.total_slouch_count} 次</span></div>
+                </div>
+            `;
+            document.getElementById('modal-actions').classList.add('hidden');
+            document.getElementById('modal').classList.remove('hidden');
+        };
+
+        window.openEditForm = (index) => {
+            const data = globalRecordsData[index];
+            document.getElementById('modal-title').textContent = "⚙️ 修改紀錄";
+            document.getElementById('modal-content').innerHTML = `
+                <div class="space-y-5">
+                    <div><label class="block text-xs text-[var(--text-muted)] mb-1">專注時長 (分鐘)</label><input type="number" step="0.1" id="edit-duration" value="${data.duration_minutes}" class="w-full bg-[#11131a] border border-[var(--border)] p-3 text-white outline-none focus:border-[var(--gold)]"></div>
+                    <div><label class="block text-xs text-[var(--text-muted)] mb-1">警告次數</label><input type="number" id="edit-alerts" value="${data.total_slouch_count}" class="w-full bg-[#11131a] border border-[var(--border)] p-3 text-[var(--red)] font-bold outline-none focus:border-[var(--gold)]"></div>
+                    <div><label class="block text-xs text-[var(--text-muted)] mb-1">偵測模式</label><select id="edit-mode" class="w-full bg-[#11131a] border border-[var(--border)] p-3 text-white outline-none focus:border-[var(--gold)]"><option value="FRONTAL" ${data.mode_used === 'FRONTAL' ? 'selected' : ''}>正面</option><option value="LATERAL" ${data.mode_used === 'LATERAL' ? 'selected' : ''}>側面</option></select></div>
+                </div>
+            `;
+            document.getElementById('modal-actions').innerHTML = `
+                <button onclick="closeModal()" class="px-5 py-2 border border-[var(--border)] text-[var(--text-muted)] rounded-lg hover:bg-[#333]">取消</button>
+                <button onclick="submitEdit('${data.id}')" class="px-5 py-2 bg-[var(--gold)] text-black font-bold rounded-lg hover:bg-yellow-400 shadow-[0_0_15px_rgba(212,175,55,0.4)]">儲存</button>
+            `;
+            document.getElementById('modal-actions').classList.remove('hidden');
+            document.getElementById('modal').classList.remove('hidden');
+        };
+
+        window.submitEdit = async (docId) => {
+            try {
+                await updateDoc(doc(db, '專注記錄列表資料來源', docId), {
+                    duration_minutes: parseFloat(document.getElementById('edit-duration').value),
+                    total_slouch_count: parseInt(document.getElementById('edit-alerts').value),
+                    mode_used: document.getElementById('edit-mode').value
+                });
+                alert("✅ 修改成功！"); closeModal(); loadRecords();
+            } catch (e) { alert("❌ 失敗: " + e.message); }
+        };
+
+        window.deleteRecord = async (docId) => {
+            if (confirm("確定永久刪除？")) {
+                try { await deleteDoc(doc(db, '專注記錄列表資料來源', docId)); loadRecords(); } catch (e) { alert("失敗: " + e.message); }
+            }
+        };
+
+        window.closeModal = () => document.getElementById('modal').classList.add('hidden');
+    </script>
+</body>
+
+</html>
