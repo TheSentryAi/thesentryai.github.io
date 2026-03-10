@@ -242,7 +242,7 @@
     <!-- Firebase 邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
         import { getFirestore, collectionGroup, collection, getDocs, doc, setDoc, deleteDoc, updateDoc, query } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -259,37 +259,52 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // 🚨【非常重要】請把這裡換成你用來測試登入的 Google 信箱
         const ADMIN_EMAILS = [
             "capqq82@gmail.com", "thesentryai@gmail.com"
         ];
 
         let globalRecordsData = [];
+        const errorMsgEl = document.getElementById('login-error');
 
-        // --- 1. 登入與基礎 UI 控制 ---
-        // 捕捉從 Google 跳轉回來的結果
-        getRedirectResult(auth).then(async (result) => {
-            if (result) {
-                // 如果登入成功，檢查白名單
+        // ==========================================
+        // 1. 登入與驗證邏輯 (彈窗模式 + 強力錯誤捕捉)
+        // ==========================================
+        document.getElementById('google-login-btn').onclick = async () => {
+            // 點擊瞬間先改變畫面，確保按鈕有反應
+            errorMsgEl.textContent = "⏳ 正在呼叫 Google 驗證視窗...";
+            errorMsgEl.classList.remove('hidden', 'text-[var(--red)]');
+            errorMsgEl.classList.add('text-[var(--gold)]');
+
+            try {
+                const result = await signInWithPopup(auth, provider);
+
                 if (!ADMIN_EMAILS.includes(result.user.email)) {
-                    document.getElementById('login-error').textContent = "⚠️ 存取拒絕：您的信箱不在白名單中！";
-                    document.getElementById('login-error').classList.remove('hidden');
+                    errorMsgEl.classList.replace('text-[var(--gold)]', 'text-[var(--red)]');
+                    errorMsgEl.textContent = `⚠️ 存取拒絕：${result.user.email} 不在管理員名單中！`;
                     await signOut(auth); // 踢出
                 }
-            }
-        }).catch((error) => {
-            console.error("登入流程發生錯誤", error);
-        });
+            } catch (error) {
+                console.error("登入發生錯誤:", error);
+                errorMsgEl.classList.replace('text-[var(--gold)]', 'text-[var(--red)]');
 
-        // 點擊按鈕時，不要彈窗，直接把整個網頁導向 Google
-        document.getElementById('google-login-btn').onclick = () => {
-            signInWithRedirect(auth, provider);
+                // 將常見錯誤翻譯成白話文顯示在畫面上
+                if (error.code === 'auth/popup-blocked') {
+                    errorMsgEl.textContent = "❌ 錯誤：彈出視窗被瀏覽器封鎖了！請在網址列點擊「允許彈出視窗」。";
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    errorMsgEl.textContent = "❌ 您關閉了登入視窗，請再試一次。";
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    errorMsgEl.textContent = "❌ 錯誤：網域未授權！請確認已將此網址加入 Firebase 的 Authorized domains。";
+                } else {
+                    errorMsgEl.textContent = `❌ 系統錯誤：${error.message}`;
+                }
+            }
         };
 
-        document.getElementById('logout-btn').onclick = () => signOut(auth);
-
-        onAuthStateChanged(auth, (user) => {
+        // 唯一且乾淨的狀態監聽器
+        onAuthStateChanged(auth, async (user) => {
             if (user && ADMIN_EMAILS.includes(user.email)) {
+                // ✅ 驗證成功
+                errorMsgEl.classList.add('hidden');
                 document.getElementById('login-view').classList.add('hidden');
                 document.getElementById('sidebar').classList.remove('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
@@ -299,12 +314,16 @@
                 loadUsers();
                 loadRecords();
             } else {
+                // 未登入，或被踢出
+                if (user) await signOut(auth);
                 document.getElementById('login-view').classList.remove('hidden');
                 document.getElementById('sidebar').classList.add('hidden');
                 document.getElementById('main-content').classList.add('hidden');
                 document.getElementById('main-content').classList.remove('flex');
             }
         });
+
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
 
         window.switchTab = (tab) => {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -314,7 +333,9 @@
             document.getElementById('page-title').textContent = tab === 'users' ? '會員清單管理' : '全站專注紀錄';
         };
 
-        // --- 2. 會員清單模組 ---
+        // ==========================================
+        // 2. 會員清單模組
+        // ==========================================
         async function loadUsers() {
             const tbody = document.getElementById('user-table-body');
             try {
@@ -371,7 +392,9 @@
             }
         };
 
-        // --- 3. 專注紀錄模組 ---
+        // ==========================================
+        // 3. 專注紀錄模組
+        // ==========================================
         async function loadRecords() {
             const tbody = document.getElementById('record-table-body');
             try {
