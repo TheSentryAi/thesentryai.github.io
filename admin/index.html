@@ -242,7 +242,7 @@
     <!-- Firebase 邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
         import { getFirestore, collectionGroup, collection, getDocs, doc, setDoc, deleteDoc, updateDoc, query } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -267,15 +267,23 @@
         let globalRecordsData = [];
 
         // --- 1. 登入與基礎 UI 控制 ---
-        document.getElementById('google-login-btn').onclick = async () => {
-            try {
-                const result = await signInWithPopup(auth, provider);
+        // 捕捉從 Google 跳轉回來的結果
+        getRedirectResult(auth).then(async (result) => {
+            if (result) {
+                // 如果登入成功，檢查白名單
                 if (!ADMIN_EMAILS.includes(result.user.email)) {
                     document.getElementById('login-error').textContent = "⚠️ 存取拒絕：您的信箱不在白名單中！";
                     document.getElementById('login-error').classList.remove('hidden');
-                    await signOut(auth);
+                    await signOut(auth); // 踢出
                 }
-            } catch (error) { console.error("登入失敗", error); }
+            }
+        }).catch((error) => {
+            console.error("登入流程發生錯誤", error);
+        });
+
+        // 點擊按鈕時，不要彈窗，直接把整個網頁導向 Google
+        document.getElementById('google-login-btn').onclick = () => {
+            signInWithRedirect(auth, provider);
         };
 
         document.getElementById('logout-btn').onclick = () => signOut(auth);
