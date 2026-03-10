@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE SENTRY AI | 系統管理平台</title>
+    <title>SENTRY AI | 系統管理平台</title>
     <meta name="robots" content="noindex, nofollow">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -138,7 +138,7 @@
 
 <body class="flex h-screen">
 
-    <!-- 登入視圖 -->
+    <!-- 登入視圖 (Popup 版本) -->
     <div id="login-view"
         class="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg-dark)] bg-opacity-95 backdrop-blur-md">
         <div class="admin-card p-10 text-center max-w-md w-full">
@@ -242,6 +242,8 @@
     <!-- Firebase 邏輯 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+        // ⚠️ 這裡使用的是 signInWithPopup (彈窗模式)
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
         import { getFirestore, collectionGroup, collection, getDocs, doc, setDoc, deleteDoc, updateDoc, query } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
@@ -259,8 +261,9 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
+        // 🚨【非常重要】請把這裡換成你用來測試登入的 Google 信箱
         const ADMIN_EMAILS = [
-            "capqq82@gmail.com", "thesentryai@gmail.com"
+            "your.email@gmail.com", "thesentryai@gmail.com"
         ];
 
         let globalRecordsData = [];
@@ -276,8 +279,10 @@
             errorMsgEl.classList.add('text-[var(--gold)]');
 
             try {
+                // 呼叫彈出視窗
                 const result = await signInWithPopup(auth, provider);
 
+                // 成功登入後，立刻檢查信箱是否在白名單
                 if (!ADMIN_EMAILS.includes(result.user.email)) {
                     errorMsgEl.classList.replace('text-[var(--gold)]', 'text-[var(--red)]');
                     errorMsgEl.textContent = `⚠️ 存取拒絕：${result.user.email} 不在管理員名單中！`;
@@ -287,7 +292,7 @@
                 console.error("登入發生錯誤:", error);
                 errorMsgEl.classList.replace('text-[var(--gold)]', 'text-[var(--red)]');
 
-                // 將常見錯誤翻譯成白話文顯示在畫面上
+                // 將常見錯誤翻譯成白話文顯示在畫面上，方便 Debug
                 if (error.code === 'auth/popup-blocked') {
                     errorMsgEl.textContent = "❌ 錯誤：彈出視窗被瀏覽器封鎖了！請在網址列點擊「允許彈出視窗」。";
                 } else if (error.code === 'auth/popup-closed-by-user') {
@@ -314,7 +319,7 @@
                 loadUsers();
                 loadRecords();
             } else {
-                // 未登入，或被踢出
+                // 未登入，或信箱不對被踢出
                 if (user) await signOut(auth);
                 document.getElementById('login-view').classList.remove('hidden');
                 document.getElementById('sidebar').classList.add('hidden');
