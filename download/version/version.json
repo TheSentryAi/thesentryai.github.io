@@ -1,6 +1,6 @@
 [
     {
-        "isLatest": true,
+        "isLatest": false,
         "isTest": true,
         "date": "2026-03-03",
         "version": "v0.4.0",
@@ -8,12 +8,12 @@
         "downloadLink": "https://github.com/TheSentryAi/thesentryai.github.io/releases/download/v0.4.0/Setup_TheSentryAI_Beta0.4.0.exe"
     },
     {
-        "isLatest": false,
+        "isLatest": true,
         "isTest": false,
-        "date": "-",
+        "date": "2026-04-03",
         "version": "v1.0.0",
-        "summary": "尚未發行",
-        "downloadLink": ""
+        "summary": "優化 Beta 0.4.0 版本並發布正式版v1.0.0。",
+        "downloadLink": "https://github.com/TheSentryAi/thesentryai.github.io/releases/download/v1.0.0/Setup_TheSentryAI_1.0.0.exe"
     },
     {
         "isLatest": false,
