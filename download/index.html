@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>星崔AI | 軟體下載</title>
     <style>
-        /* --- 基礎樣式 (保留原風格) --- */
         :root {
             --bg-dark: #090b0c;
             --bg-deep: #2f3559;
@@ -40,7 +39,6 @@
             flex-direction: column;
         }
 
-        /* 追尾球 */
         #follower-ball {
             position: fixed;
             width: 18px;
@@ -96,7 +94,6 @@
             box-shadow: 0 15px 40px rgba(114, 114, 176, 0.3);
         }
 
-        /* Logo 樣式 */
         .logo-link {
             display: flex;
             align-items: center;
@@ -140,7 +137,6 @@
             color: #ffffff;
         }
 
-        /* 導覽列 */
         nav ul {
             list-style: none;
             display: flex;
@@ -178,7 +174,6 @@
             z-index: 1001;
         }
 
-        /* 主內容區設定 */
         main {
             max-width: 900px;
             margin: 140px auto 80px;
@@ -187,7 +182,6 @@
             text-align: center;
         }
 
-        /* --- 下載頁專屬樣式 --- */
         .download-card {
             background: rgba(47, 53, 89, 0.2);
             backdrop-filter: blur(10px);
@@ -196,7 +190,6 @@
             padding: 50px;
             margin-bottom: 40px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            /* 加入淡入動畫 */
             animation: fadeIn 0.8s ease-out;
         }
 
@@ -235,7 +228,6 @@
             box-shadow: 0 0 40px rgba(220, 213, 229, 0.4);
         }
 
-        /* 鎖定狀態下的按鈕樣式 */
         .download-btn.locked {
             background: rgba(114, 114, 176, 0.3);
             color: var(--text-light);
@@ -294,9 +286,10 @@
             opacity: 0.3;
         }
 
+        /* --- 修改後的手機版響應式設計 --- */
         @media (max-width: 768px) {
             header {
-                padding: 0 30px;
+                padding: 0 20px;
             }
 
             .menu {
@@ -315,10 +308,55 @@
                 align-items: center;
                 transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
                 z-index: 1000;
+                gap: 25px;
             }
 
             nav ul.show {
                 right: 0;
+            }
+
+            main {
+                padding: 0 15px;
+            }
+
+            .download-card {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-link h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 24px !important;
+            }
+
+            h3 {
+                font-size: 20px !important;
+            }
+
+            .cta-button,
+            .download-btn {
+                padding: 12px 30px;
+                font-size: 16px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
+        /* --- 修復右上角選單未靠右與防跑版空白 --- */
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100vw;
+        }
+
+        @media (max-width: 768px) {
+            header nav {
+                position: absolute;
+                /* 將隱形的導覽列移出排版，讓漢堡按鈕完美靠右 */
             }
         }
     </style>
@@ -341,7 +379,6 @@
             <nav>
                 <ul id="nav-menu">
                     <li><a href="../log/">更新日誌</a></li>
-                    <!-- 注意路徑 -->
                     <li><a href="../download/" style="color:#fff; opacity:1;">安裝教學</a></li>
                     <li><a href="../introduce/">軟體介紹</a></li>
                     <li><a href="../about/">關於我們</a></li>
@@ -352,13 +389,11 @@
         </header>
 
         <main>
-            <!-- 主要下載區塊 (永遠顯示) -->
             <div class="download-card">
                 <span class="version-tag">最新版本 v1.0.0</span>
                 <h2 style="font-size: 36px; margin-bottom: 10px;">星崔 AI 桌面版</h2>
                 <p style="color: var(--accent);">適用於 Windows 8.1/10/11 (64-bit)</p>
 
-                <!-- 按鈕預設為鎖定狀態，等待 JS 判斷 -->
                 <a href="../login/" id="action-btn" class="download-btn locked">
                     <span>🔒 請先登入</span>
                 </a>
@@ -469,12 +504,10 @@
         </footer>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-        // Firebase 配置
         const firebaseConfig = {
             apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
             authDomain: "workai-1d692.firebaseapp.com",
@@ -487,51 +520,35 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // UI 元素
         const authLink = document.getElementById('auth-link');
         const logoutContainer = document.getElementById('logout-container');
         const actionBtn = document.getElementById('action-btn');
 
-        // 監聽登入狀態
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // --- 已登入 ---
-
-                // 1. 導覽列變化
                 authLink.innerText = "儀錶板";
                 authLink.href = "../dashboard/";
                 logoutContainer.style.display = "block";
-
-                // 2. 按鈕解鎖
                 actionBtn.innerHTML = "<span>⬇ 立即下載安裝檔</span>";
                 actionBtn.href = "https://github.com/TheSentryAi/thesentryai.github.io/releases/download/v1.0.0/Setup_TheSentryAI_1.0.0.exe";
                 actionBtn.classList.remove("locked");
-
-
             } else {
-                // --- 未登入 ---
-
-                // 1. 導覽列變化
                 authLink.innerText = "登入";
                 authLink.href = "../login/";
                 logoutContainer.style.display = "none";
-
-                // 2. 按鈕鎖定
                 actionBtn.innerHTML = "<span>🔒 請先登入</span>";
                 actionBtn.href = "../login/";
                 actionBtn.classList.add("locked");
-                actionBtn.onclick = null; // 恢復預設連結跳轉
+                actionBtn.onclick = null;
             }
         });
 
-        // 登出功能
         document.getElementById('logout-btn').addEventListener('click', (e) => {
             e.preventDefault();
             signOut(auth).then(() => { window.location.reload(); });
         });
     </script>
 
-    <!-- UI 互動腳本 -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.querySelector('.menu');
@@ -549,7 +566,6 @@
                 });
             }
 
-            // 追尾球
             const ball = document.getElementById('follower-ball');
             let mouseX = window.innerWidth / 2;
             let mouseY = window.innerHeight / 2;

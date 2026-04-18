@@ -9,15 +9,10 @@
     <style>
         :root {
             --bg-dark: #090b0c;
-            /* 極深底色 */
             --bg-deep: #2f3559;
-            /* 深藍調 */
             --primary: #7272b0;
-            /* 灰紫主色 */
             --accent: #b7a8bd;
-            /* 灰調副色 */
             --text-light: #dcd5e5;
-            /* 亮灰文字 */
             --glass: rgba(9, 11, 12, 0.65);
             --border-soft: rgba(183, 168, 189, 0.2);
         }
@@ -41,7 +36,6 @@
             color: var(--text-light);
         }
 
-        /* 註冊卡片 */
         .signup-card {
             position: relative;
             z-index: 10;
@@ -56,7 +50,6 @@
             cursor: default;
         }
 
-        /* 懸浮發光效果 */
         .signup-card:hover {
             border-color: var(--primary);
             box-shadow: 0 0 30px rgba(114, 114, 176, 0.4),
@@ -64,7 +57,6 @@
             transform: translateY(-5px);
         }
 
-        /* 標題區域 */
         .title-group {
             margin-bottom: 40px;
         }
@@ -86,7 +78,6 @@
             opacity: 0.8;
         }
 
-        /* 輸入框組 */
         .input-group {
             position: relative;
             margin-bottom: 20px;
@@ -115,7 +106,6 @@
             color: rgba(224, 224, 229, 0.3);
         }
 
-        /* 註冊按鈕 */
         .btn-signup {
             width: 100%;
             padding: 16px;
@@ -148,7 +138,6 @@
             transform: none;
         }
 
-        /* 其他選項 */
         .options {
             margin-top: 30px;
             font-size: 13px;
@@ -167,7 +156,6 @@
             text-decoration: underline;
         }
 
-        /* 訊息顯示區 */
         #message {
             margin-top: 25px;
             min-height: 20px;
@@ -187,15 +175,15 @@
             color: var(--accent);
         }
 
-        /* 行動裝置適配 */
+        /* --- 修改後的手機版響應式設計 --- */
         @media (max-width: 480px) {
             .signup-card {
                 width: 90%;
-                padding: 50px 30px;
+                padding: 40px 25px;
             }
 
             h2 {
-                font-size: 32px;
+                font-size: 30px;
             }
         }
     </style>
@@ -231,9 +219,6 @@
     </div>
 
     <script type="module">
-        // -------------------------------------------------------------
-        // 1. 導入模組與 Firebase 初始化
-        // -------------------------------------------------------------
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import {
             getAuth,
@@ -255,30 +240,22 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // 元素獲取
         const emailInput = document.getElementById('signup-email');
         const passwordInput = document.getElementById('signup-password');
         const confirmInput = document.getElementById('confirm-password');
         const signupBtn = document.getElementById('signupBtn');
         const messageDiv = document.getElementById('message');
 
-        // -------------------------------------------------------------
-        // 2. 輔助函式 (顯示訊息)
-        // -------------------------------------------------------------
         function showMessage(text, type) {
             messageDiv.textContent = text;
             messageDiv.className = type;
         }
 
-        // -------------------------------------------------------------
-        // 3. 註冊邏輯處理 (整合 indexup 架構)
-        // -------------------------------------------------------------
         const handleSignUp = async () => {
             const email = emailInput.value;
             const password = passwordInput.value;
             const confirm = confirmInput.value;
 
-            // 基本驗證
             if (!email || !password || !confirm) {
                 showMessage('❌ 請填寫所有欄位。', 'error');
                 return;
@@ -294,24 +271,18 @@
                 return;
             }
 
-            // 開始處理 UI 狀態
             signupBtn.disabled = true;
             showMessage('正在處理您的請求並發送驗證郵件...', 'info');
 
             try {
-                // 創建使用者
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // 發送驗證郵件
                 await sendEmailVerification(user);
-
-                // 註冊成功後自動登出，引導使用者從郵件驗證後再登入
                 await signOut(auth);
 
                 showMessage(`✅ 註冊成功！驗證郵件已發送至 ${email}，請驗證後再行登入。`, 'success');
 
-                // 成功後跳轉回登入頁面
                 setTimeout(() => {
                     window.location.href = '../login/';
                 }, 4000);
@@ -322,7 +293,6 @@
 
                 let errorMsg = '❌ 註冊失敗，請稍後再試。';
 
-                // 細分錯誤訊息 (參考 indexup 邏輯)
                 if (error.code === 'auth/email-already-in-use') {
                     errorMsg = '❌ 此電子郵件已被註冊，請嘗試登入。';
                 } else if (error.code === 'auth/invalid-email') {
@@ -337,12 +307,8 @@
             }
         };
 
-        // -------------------------------------------------------------
-        // 4. 事件監聽
-        // -------------------------------------------------------------
         signupBtn.addEventListener('click', handleSignUp);
 
-        // 支援 Enter 鍵觸發註冊
         [emailInput, passwordInput, confirmInput].forEach(input => {
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') handleSignUp();

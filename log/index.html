@@ -15,7 +15,6 @@
             --text-light: #dcd5e5;
             --border-soft: rgba(183, 168, 189, 0.15);
             --sakura: #E87A90;
-            /* 當前版本專屬顏色 */
         }
 
         * {
@@ -34,7 +33,6 @@
             overflow-x: hidden;
         }
 
-        /* --- 絲滑鼠標球 CSS --- */
         #follower-ball {
             position: fixed;
             width: 18px;
@@ -43,7 +41,6 @@
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            /* 僅對透明度做過渡，位移交給 JS 處理才不會抖動 */
             transition: opacity 0.3s ease;
             box-shadow: 0 0 20px var(--primary);
             opacity: 0.5;
@@ -53,7 +50,6 @@
             top: 0;
         }
 
-        /* Header 導覽列 */
         header {
             background: rgba(9, 11, 12, 0.7);
             backdrop-filter: blur(15px);
@@ -117,6 +113,16 @@
             text-shadow: 0 0 10px var(--primary);
         }
 
+        .menu {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
         main {
             max-width: 800px;
             margin: 140px auto 80px;
@@ -124,7 +130,6 @@
             flex: 1;
         }
 
-        /* --- Log 列表樣式 --- */
         .log-container {
             display: flex;
             flex-direction: column;
@@ -159,7 +164,6 @@
             flex-wrap: wrap;
         }
 
-        /* 標籤基礎樣式 */
         .tag {
             font-size: 11px;
             font-weight: 800;
@@ -169,7 +173,6 @@
             border: 1px solid;
         }
 
-        /* 顏色標籤定義 */
         .tag-web {
             color: #7272b0;
             border-color: #7272b0;
@@ -200,7 +203,6 @@
             background: rgba(232, 69, 69, 0.05);
         }
 
-        /* 🌟 當前版本專屬 (櫻色) */
         .tag-current {
             color: #fff;
             border-color: var(--sakura);
@@ -235,7 +237,6 @@
             margin-top: 5px;
         }
 
-        /* 開合內容動畫 */
         .log-content {
             max-height: 0;
             overflow: hidden;
@@ -268,20 +269,83 @@
             opacity: 0.3;
         }
 
-        @media (max-width: 640px) {
+        /* --- 修改後的手機版響應式設計 --- */
+        @media (max-width: 768px) {
             header {
                 padding: 0 20px;
             }
 
-            nav {
-                display: none;
+            .menu {
+                display: block;
+            }
+
+            nav ul {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 100%;
+                height: 100vh;
+                background: var(--bg-dark);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+                z-index: 1000;
+                gap: 25px;
+            }
+
+            nav ul.show {
+                right: 0;
+            }
+
+            main {
+                padding: 0 15px;
+            }
+
+            .log-header {
+                padding: 20px;
+            }
+
+            .log-content {
+                padding: 0 20px;
+            }
+
+            .log-item.active .log-content {
+                padding: 15px 20px 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-link h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 28px !important;
+            }
+
+            .log-meta {
+                gap: 5px;
+            }
+        }
+
+        /* --- 修復右上角選單未靠右與防跑版空白 --- */
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100vw;
+        }
+
+        @media (max-width: 768px) {
+            header nav {
+                position: absolute;
+                /* 將隱形的導覽列移出排版，讓漢堡按鈕完美靠右 */
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- 鼠標追隨球 -->
     <div id="follower-ball"></div>
 
     <div class="shell">
@@ -291,6 +355,7 @@
                         style="width:100%; height:100%; object-fit:cover;"></div>
                 <h1>星崔AI</h1>
             </a>
+            <button class="menu" aria-label="開啟選單">&#9776;</button>
             <nav>
                 <ul id="nav-menu">
                     <li><a href="../log/" style="color:#fff; opacity:1;">更新日誌</a></li>
@@ -310,7 +375,6 @@
             </div>
 
             <div id="log-list" class="log-container">
-                <!-- 由 JS 從 log.json 載入 -->
                 <p style="text-align: center; opacity: 0.5;">正在載入日誌數據...</p>
             </div>
         </main>
@@ -322,12 +386,10 @@
         </footer>
     </div>
 
-    <!-- Firebase & Log Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-        // Firebase 配置 (維持不變)
         const firebaseConfig = {
             apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
             authDomain: "workai-1d692.firebaseapp.com",
@@ -338,7 +400,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // 更新導覽列登入狀態
         onAuthStateChanged(auth, (user) => {
             const authLink = document.getElementById('auth-link');
             if (user) {
@@ -347,7 +408,6 @@
             }
         });
 
-        // 讀取 JSON 並渲染日誌
         async function fetchLogs() {
             try {
                 const response = await fetch('log.json');
@@ -366,7 +426,6 @@
                 const item = document.createElement('div');
                 item.className = 'log-item';
 
-                // 處理標籤
                 const projectClass = log.project === 'web' ? 'tag-web' : 'tag-desktop';
                 const projectName = log.project === 'web' ? '網頁端' : '桌面端';
 
@@ -393,7 +452,6 @@
                 `;
 
                 item.onclick = () => {
-                    // 切換開合狀態
                     item.classList.toggle('active');
                 };
 
@@ -403,7 +461,23 @@
 
         fetchLogs();
 
-        // --- 絲滑鼠標球 JS 邏輯 ---
+        // 漢堡選單邏輯
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.querySelector('.menu');
+            const navMenu = document.getElementById('nav-menu');
+            if (menuBtn && navMenu) {
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (e) => {
+                    if (navMenu.classList.contains('show') && !navMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                        navMenu.classList.remove('show');
+                    }
+                });
+            }
+        });
+
         const ball = document.getElementById('follower-ball');
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
@@ -416,13 +490,9 @@
         });
 
         function animateBall() {
-            // 線性插值動畫 (Lerp)
             ballX += (mouseX - ballX) * 0.12;
             ballY += (mouseY - ballY) * 0.12;
-
-            // 關鍵：-9 補償球體寬高的一半，使其精確對準中心
             ball.style.transform = `translate(${ballX - 9}px, ${ballY - 9}px)`;
-
             requestAnimationFrame(animateBall);
         }
         animateBall();

@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>星崔AI | 軟體介紹與科學指南</title>
     <style>
-        /* --- 基礎樣式 (完全對齊下載頁面) --- */
         :root {
             --bg-dark: #090b0c;
             --bg-deep: #2f3559;
@@ -40,7 +39,6 @@
             flex-direction: column;
         }
 
-        /* 追尾球 */
         #follower-ball {
             position: fixed;
             width: 18px;
@@ -157,7 +155,6 @@
             flex: 1;
         }
 
-        /* --- 介紹頁專屬樣式 --- */
         .info-card {
             background: rgba(47, 53, 89, 0.2);
             backdrop-filter: blur(10px);
@@ -178,7 +175,6 @@
             padding-left: 15px;
         }
 
-        /* 指標顏色樣式 */
         .badge {
             display: inline-block;
             padding: 2px 10px;
@@ -234,23 +230,6 @@
             opacity: 0.7;
         }
 
-        .faq-item {
-            margin-bottom: 25px;
-        }
-
-        .faq-q {
-            color: #fff;
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .faq-a {
-            color: var(--accent);
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
         .steps-container {
             text-align: left;
             margin-top: 40px;
@@ -298,9 +277,10 @@
             opacity: 0.3;
         }
 
+        /* --- 修改後的手機版響應式設計 --- */
         @media (max-width: 768px) {
             header {
-                padding: 0 30px;
+                padding: 0 20px;
             }
 
             .menu {
@@ -319,10 +299,52 @@
                 align-items: center;
                 transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
                 z-index: 1000;
+                gap: 25px;
             }
 
             nav ul.show {
                 right: 0;
+            }
+
+            main {
+                padding: 0 15px;
+            }
+
+            .info-card {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-link h1 {
+                font-size: 20px;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+
+            .info-card {
+                padding: 20px;
+            }
+
+            .rating-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* --- 修復右上角選單未靠右與防跑版空白 --- */
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100vw;
+        }
+
+        @media (max-width: 768px) {
+            header nav {
+                position: absolute;
+                /* 將隱形的導覽列移出排版，讓漢堡按鈕完美靠右 */
             }
         }
     </style>
@@ -353,7 +375,6 @@
         </header>
 
         <main>
-            <!-- 標題與簡介 -->
             <div style="text-align: center; margin-bottom: 60px;">
                 <h2 style="font-size: 42px; margin-bottom: 10px;">軟體介紹</h2>
                 <p style="color: var(--accent); font-size: 18px;">星崔AI • The Sentry AI</p>
@@ -467,7 +488,6 @@
         </footer>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
@@ -504,7 +524,6 @@
         });
     </script>
 
-    <!-- UI Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.querySelector('.menu');

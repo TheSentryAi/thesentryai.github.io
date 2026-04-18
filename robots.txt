@@ -1,3 +1,2 @@
 User-agent: *
 Disallow: /admin/
-Sitemap: https://thesentryai.github.io/sitemap.xml

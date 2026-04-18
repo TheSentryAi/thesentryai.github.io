@@ -36,7 +36,6 @@
             color: var(--text-light);
         }
 
-        /* 忘記密碼卡片 */
         .reset-card {
             position: relative;
             z-index: 10;
@@ -161,10 +160,15 @@
             color: var(--accent);
         }
 
+        /* --- 修改後的手機版響應式設計 --- */
         @media (max-width: 480px) {
             .reset-card {
                 width: 90%;
-                padding: 50px 30px;
+                padding: 40px 25px;
+            }
+
+            h2 {
+                font-size: 30px;
             }
         }
     </style>
@@ -195,7 +199,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-        // Firebase 配置 (與登入頁相同)
         const firebaseConfig = {
             apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
             authDomain: "workai-1d692.firebaseapp.com",
@@ -229,11 +232,9 @@
             showMessage('正在聯繫中樞發送郵件...', 'info');
 
             try {
-                // Firebase 發送重設密碼郵件
                 await sendPasswordResetEmail(auth, email);
 
                 showMessage('郵件已成功發送！請檢查您的信箱。', 'success');
-                // 成功後將按鈕變成導向登入
                 resetBtn.innerText = "回到登入";
                 resetBtn.onclick = () => window.location.href = '../login/';
                 resetBtn.disabled = false;

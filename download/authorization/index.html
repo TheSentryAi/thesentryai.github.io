@@ -93,7 +93,6 @@
             font-weight: 600;
             letter-spacing: 1px;
             text-align: center;
-            /* 加入一個簡單的呼吸效果，增加等待感的質感 */
             animation: pulse 2s infinite;
         }
 
@@ -117,6 +116,22 @@
             font-size: 13px;
             letter-spacing: 2px;
             opacity: 0.3;
+        }
+
+        /* --- 新增的響應式設計 --- */
+        @media (max-width: 480px) {
+            header {
+                padding: 0 20px;
+            }
+
+            .logo-link h1 {
+                font-size: 20px;
+            }
+
+            main h2 {
+                font-size: 20px;
+                padding: 0 10px;
+            }
         }
     </style>
 </head>

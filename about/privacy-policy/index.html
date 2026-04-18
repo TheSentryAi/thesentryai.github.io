@@ -6,11 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>星崔AI | 隱私權政策</title>
-    <!-- 引入 Markdown 解析器 -->
+
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
-        /* --- 基礎樣式 (保留原風格) --- */
         :root {
             --bg-dark: #090b0c;
             --bg-deep: #2f3559;
@@ -43,7 +42,6 @@
             flex-direction: column;
         }
 
-        /* 追尾球 */
         #follower-ball {
             position: fixed;
             width: 18px;
@@ -75,7 +73,6 @@
             border-bottom: 1px solid var(--border-soft);
         }
 
-        /* Logo 樣式 */
         .logo-link {
             display: flex;
             align-items: center;
@@ -119,7 +116,6 @@
             color: #ffffff;
         }
 
-        /* 導覽列 */
         nav ul {
             list-style: none;
             display: flex;
@@ -157,7 +153,6 @@
             z-index: 1001;
         }
 
-        /* 主內容區設定 */
         main {
             max-width: 900px;
             margin: 140px auto 80px;
@@ -165,7 +160,6 @@
             flex: 1;
         }
 
-        /* --- Markdown 內容樣式 (新增) --- */
         .markdown-body {
             text-align: left;
             background: rgba(47, 53, 89, 0.1);
@@ -175,7 +169,6 @@
             border: 1px solid rgba(114, 114, 176, 0.2);
         }
 
-        /* 標題樣式 */
         .markdown-body h1 {
             font-size: 32px;
             color: #fff;
@@ -202,7 +195,6 @@
             font-weight: bold;
         }
 
-        /* 內文樣式 */
         .markdown-body p {
             margin-bottom: 16px;
             color: var(--text-light);
@@ -247,9 +239,10 @@
             opacity: 0.3;
         }
 
+        /* --- 修改後的手機版響應式設計 --- */
         @media (max-width: 768px) {
             header {
-                padding: 0 30px;
+                padding: 0 20px;
             }
 
             .menu {
@@ -268,14 +261,47 @@
                 align-items: center;
                 transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
                 z-index: 1000;
+                gap: 25px;
             }
 
             nav ul.show {
                 right: 0;
             }
 
+            main {
+                padding: 0 15px;
+            }
+
             .markdown-body {
                 padding: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-link h1 {
+                font-size: 20px;
+            }
+
+            .markdown-body h1 {
+                font-size: 26px;
+            }
+
+            .markdown-body h2 {
+                font-size: 20px;
+            }
+        }
+
+        /* --- 修復右上角選單未靠右與防跑版空白 --- */
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100vw;
+        }
+
+        @media (max-width: 768px) {
+            header nav {
+                position: absolute;
+                /* 將隱形的導覽列移出排版，讓漢堡按鈕完美靠右 */
             }
         }
     </style>
@@ -308,7 +334,6 @@
         </header>
 
         <main>
-            <!-- 用來顯示轉換後的 Markdown HTML -->
             <div id="policy-content" class="markdown-body"></div>
         </main>
 
@@ -319,8 +344,6 @@
         </footer>
     </div>
 
-    <!-- ★★★ 在這裡貼上您的 Markdown 內容 ★★★ -->
-    <!-- 注意：不要破壞 script 標籤，把內容貼在中間即可 -->
     <script type="text/markdown" id="raw-markdown">
 # 隱私權政策
 
@@ -372,23 +395,16 @@
 
 [下載 PDF 檔案](./TheSentryAI_Privacy-Policy_20260228.pdf)
 
-
-
-
     </script>
 
-    <!-- Markdown 解析與渲染腳本 -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const rawMarkdown = document.getElementById('raw-markdown').textContent;
             const contentDiv = document.getElementById('policy-content');
-
-            // 使用 marked.js 將 markdown 轉為 html
             contentDiv.innerHTML = marked.parse(rawMarkdown);
         });
     </script>
 
-    <!-- Firebase SDK (保留導覽列狀態功能) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
@@ -426,7 +442,6 @@
         });
     </script>
 
-    <!-- UI 互動腳本 -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.querySelector('.menu');

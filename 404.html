@@ -81,12 +81,10 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            /* 讓內容垂直排列 */
             align-items: center;
             justify-content: center;
             padding: 0 25px;
             gap: 40px;
-            /* 標題與按鈕的間距 */
         }
 
         h2 {
@@ -98,7 +96,6 @@
             animation: pulse 2s infinite;
         }
 
-        /* --- 新增按鈕樣式 --- */
         .back-home {
             text-decoration: none;
             color: #fff;
@@ -139,6 +136,26 @@
             font-size: 13px;
             letter-spacing: 2px;
             opacity: 0.3;
+        }
+
+        /* --- 新增的響應式設計 --- */
+        @media (max-width: 480px) {
+            header {
+                padding: 0 20px;
+            }
+
+            .logo-link h1 {
+                font-size: 20px;
+            }
+
+            main h1 {
+                font-size: 32px !important;
+            }
+
+            main h2 {
+                font-size: 16px;
+                padding: 0 10px;
+            }
         }
     </style>
 </head>

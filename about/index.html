@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>星崔AI | 關於我們</title>
     <style>
-        /* --- 基礎樣式 (維持不變) --- */
         :root {
             --bg-dark: #090b0c;
             --bg-deep: #2f3559;
@@ -39,7 +38,6 @@
             flex-direction: column;
         }
 
-        /* 追尾球 */
         #follower-ball {
             position: fixed;
             width: 18px;
@@ -71,7 +69,6 @@
             border-bottom: 1px solid var(--border-soft);
         }
 
-        /* Logo & Nav (維持不變) */
         .logo-link {
             display: flex;
             align-items: center;
@@ -152,15 +149,12 @@
             z-index: 1001;
         }
 
-        /* 主內容區設定 */
         main {
             max-width: 1000px;
             margin: 120px auto 80px;
             padding: 0 25px;
             flex: 1;
         }
-
-        /* --- 關於我們專屬樣式 --- */
 
         .section-title {
             text-align: center;
@@ -184,7 +178,6 @@
             border-radius: 2px;
         }
 
-        /* 資訊卡片 (專題資訊/網站資訊) */
         .info-card {
             background: rgba(47, 53, 89, 0.2);
             backdrop-filter: blur(10px);
@@ -221,15 +214,12 @@
             font-weight: bold;
         }
 
-        /* 組員介紹網格 */
         .team-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            /* 一列兩個 */
             gap: 30px;
         }
 
-        /* 組員卡片 */
         .member-card {
             background: linear-gradient(145deg, rgba(47, 53, 89, 0.4), rgba(9, 11, 12, 0.6));
             border: 1px solid var(--border-soft);
@@ -249,7 +239,6 @@
             border-color: var(--primary);
         }
 
-        /* 組員照片 (圓形/圓角) */
         .member-avatar {
             width: 100px;
             height: 100px;
@@ -258,7 +247,6 @@
             overflow: hidden;
             border: 2px solid var(--primary);
             background: #1a1a2e;
-            /* 圖片載入前的底色 */
         }
 
         .member-avatar img {
@@ -267,7 +255,6 @@
             object-fit: cover;
         }
 
-        /* 組員文字資訊 */
         .member-info h3 {
             font-size: 22px;
             color: #fff;
@@ -299,9 +286,32 @@
             opacity: 0.3;
         }
 
+        .group-photo-box {
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(114, 114, 176, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            margin-bottom: 60px;
+            background: rgba(47, 53, 89, 0.2);
+            position: relative;
+        }
+
+        .group-photo-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.6s ease;
+        }
+
+        .group-photo-box:hover img {
+            transform: scale(1.03);
+        }
+
+        /* --- 修改後的手機版響應式設計 --- */
         @media (max-width: 768px) {
             header {
-                padding: 0 30px;
+                padding: 0 20px;
             }
 
             .menu {
@@ -320,10 +330,15 @@
                 align-items: center;
                 transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
                 z-index: 1000;
+                gap: 25px;
             }
 
             nav ul.show {
                 right: 0;
+            }
+
+            main {
+                padding: 0 15px;
             }
 
             .info-grid {
@@ -332,40 +347,44 @@
 
             .team-grid {
                 grid-template-columns: 1fr;
-                /* 手機版改為單欄 */
             }
 
             .member-card {
                 flex-direction: column;
                 text-align: center;
             }
+
+            .info-card {
+                padding: 25px;
+            }
         }
 
-        .group-photo-box {
-            width: 100%;
-            border-radius: 24px;
-            overflow: hidden;
-            /* 確保圖片不超出圓角 */
-            border: 1px solid rgba(114, 114, 176, 0.3);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-            margin-bottom: 60px;
-            /* 與下方標題保持距離 */
-            background: rgba(47, 53, 89, 0.2);
-            /* 載入前的背景色 */
-            position: relative;
+        @media (max-width: 480px) {
+            .logo-link h1 {
+                font-size: 20px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .info-card {
+                padding: 20px;
+            }
         }
 
-        .group-photo-box img {
-            width: 100%;
-            height: auto;
-            display: block;
-            /* 消除圖片底部空隙 */
-            transition: transform 0.6s ease;
+        /* --- 修復右上角選單未靠右與防跑版空白 --- */
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100vw;
         }
 
-        /* 滑鼠懸停時微幅放大特效 */
-        .group-photo-box:hover img {
-            transform: scale(1.03);
+        @media (max-width: 768px) {
+            header nav {
+                position: absolute;
+                /* 將隱形的導覽列移出排版，讓漢堡按鈕完美靠右 */
+            }
         }
     </style>
 </head>
@@ -387,7 +406,6 @@
             <nav>
                 <ul id="nav-menu">
                     <li><a href="../log/">更新日誌</a></li>
-                    <!-- 導覽列連結 -->
                     <li><a href="../download/">安裝教學</a></li>
                     <li><a href="../introduce/">軟體介紹</a></li>
                     <li><a href="./" style="color:#fff; opacity:1;">關於我們</a></li>
@@ -398,7 +416,6 @@
         </header>
 
         <main>
-            <!-- 區塊 1: 專題與網站資訊 -->
             <h2 class="section-title">專題資訊</h2>
             <div class="info-card">
                 <div class="info-grid">
@@ -429,19 +446,13 @@
                 </div>
             </div>
 
-
-
-
-            <!-- 區塊 2: 團隊成員 (四人) -->
             <h2 class="section-title">團隊成員</h2>
             <div class="group-photo-box">
-                <!-- 請將下方的 src 修改為您實際的合照路徑，例如 ../images/team_group.jpg -->
                 <img src="../images/developer_team.jpg" alt="團隊合照"
                     onerror="this.src='https://png.pngtree.com/png-vector/20220704/ourmid/pngtree-wait-icon-design-vector-png-image_5602801.png'">
             </div>
             <div class="team-grid" style="margin-bottom:50px">
 
-                <!-- 組員 1 -->
                 <div class="member-card">
                     <div class="member-avatar">
                         <img src="../images/FanFan Lin.jpg" alt="FanFan Lin"
@@ -454,7 +465,6 @@
                     </div>
                 </div>
 
-                <!-- 組員 2 -->
                 <div class="member-card">
                     <div class="member-avatar">
                         <img src="../images/Y.S.Weng.jpg" alt="Y.S.Weng"
@@ -467,7 +477,6 @@
                     </div>
                 </div>
 
-                <!-- 組員 3 -->
                 <div class="member-card">
                     <div class="member-avatar">
                         <img src="../images/The Wei King.jpg" alt="The Wei King"
@@ -480,7 +489,6 @@
                     </div>
                 </div>
 
-                <!-- 組員 4 -->
                 <div class="member-card">
                     <div class="member-avatar">
                         <img src="../images/PigeoWen.jpg" alt="PigeoWen"
@@ -493,8 +501,6 @@
                     </div>
                 </div>
 
-
-
             </div>
 
             <h2 class="section-title">聯絡我們</h2>
@@ -502,14 +508,12 @@
                 <h3>thesentryai@gmail.com</h3>
             </div>
 
-
             <br>
             <h2 class="section-title">注意事項</h2>
             <div class="info-card" style="text-align: center;">
                 <h3 style="text-align: center;">當您使用「星崔AI」提供的一切服務（包含但不限於網頁、電腦程式）代表您同意遵守我們的 <a href="./terms-of-service/"
                         style="color: inherit;">服務條款</a></h3>
             </div>
-
 
         </main>
 
@@ -520,7 +524,6 @@
         </footer>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
@@ -557,7 +560,6 @@
         });
     </script>
 
-    <!-- UI Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const menuBtn = document.querySelector('.menu');
