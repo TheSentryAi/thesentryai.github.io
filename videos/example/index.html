@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <link rel="icon" type="image/x-icon" href="../images/logo_w.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星崔AI | 影音教學中心</title>
+    <style>
+        /* --- 基礎共用樣式 --- */
+        :root {
+            --bg-dark: #090b0c; --bg-deep: #2f3559; --primary: #7272b0;
+            --accent: #b7a8bd; --text-light: #dcd5e5; --border-soft: rgba(183, 168, 189, 0.15);
+            --gold: #d4af37;
+        }
+
+        * { padding: 0; margin: 0; box-sizing: border-box; font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; }
+        body { background-color: var(--bg-dark); background-image: radial-gradient(circle at 50% 50%, var(--bg-deep) 0%, var(--bg-dark) 100%); background-attachment: fixed; color: var(--text-light); line-height: 1.8; overflow-x: hidden; }
+        .shell { min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* 絲滑鼠標球 */
+        #follower-ball { position: fixed; width: 18px; height: 18px; background-color: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transition: opacity 0.3s ease; box-shadow: 0 0 20px var(--primary); opacity: 0.5; mix-blend-mode: screen; will-change: transform; left: 0; top: 0; }
+
+        /* 導覽列 */
+        header { background: rgba(9, 11, 12, 0.7); backdrop-filter: blur(15px); height: 80px; width: 100%; position: fixed; top: 0; left: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 8%; border-bottom: 1px solid var(--border-soft); }
+        .logo-link { display: flex; align-items: center; gap: 16px; text-decoration: none; }
+        .logo-img-box { width: 56px; height: 56px; border-radius: 12px; overflow: hidden; transition: 0.5s; box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
+        .logo-link:hover .logo-img-box { transform: scale(1.1); }
+        .logo-link h1 { font-size: 24px; font-weight: 700; color: #dcd5e5; letter-spacing: -0.5px; }
+        nav ul { list-style: none; display: flex; gap: 40px; }
+        nav a { color: var(--text-light); text-decoration: none; font-size: 14px; opacity: 0.7; transition: 0.4s; letter-spacing: 1px; }
+        nav a:hover, nav a.active { opacity: 1; text-shadow: 0 0 10px var(--primary); color: #fff; }
+        .menu { display: none; background: none; border: none; color: var(--text-light); font-size: 28px; cursor: pointer; z-index: 1001; }
+
+        main { max-width: 1000px; margin: 120px auto 80px; padding: 0 25px; flex: 1; }
+
+        /* --- 影片頁專屬樣式 --- */
+        
+        /* 標題區 */
+        .page-title { text-align: center; margin-bottom: 40px; }
+        .page-title h2 { font-size: 42px; font-weight: 800; color: #fff; margin-bottom: 10px; text-shadow: 0 0 20px rgba(114, 114, 176, 0.5); }
+        .page-title p { color: var(--accent); font-size: 18px; letter-spacing: 1px; }
+
+        /* 主播放器容器 (完美 16:9 比例) */
+        .main-player-wrapper {
+            background: rgba(9, 11, 12, 0.8);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(114, 114, 176, 0.2);
+            margin-bottom: 30px;
+            animation: glow-border 4s infinite alternate;
+        }
+
+        @keyframes glow-border {
+            0% { box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 10px rgba(114, 114, 176, 0.2); }
+            100% { box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 25px rgba(114, 114, 176, 0.6); }
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 的魔法比例 */
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        /* 當前播放影片的資訊 */
+        .now-playing-info {
+            background: rgba(47, 53, 89, 0.2);
+            padding: 25px 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border-soft);
+            margin-bottom: 60px;
+        }
+        #video-title { font-size: 24px; font-weight: bold; color: #fff; margin-bottom: 10px; }
+        #video-desc { color: var(--accent); line-height: 1.6; font-size: 15px; }
+
+        /* 播放清單網格 */
+        .playlist-title { font-size: 20px; color: #fff; margin-bottom: 20px; border-left: 4px solid var(--primary); padding-left: 15px; }
+        .playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* 影片卡片 */
+        .video-card {
+            background: rgba(9, 11, 12, 0.5);
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .video-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            background: rgba(47, 53, 89, 0.4);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        .card-thumbnail {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background-color: #000;
+        }
+        /* 利用 Youtube 封面圖 API 自動抓取封面 */
+        .card-thumbnail img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 0.3s;
+        }
+        .video-card:hover .card-thumbnail img { opacity: 1; }
+        
+        .play-icon {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 48px; height: 48px; background: rgba(114, 114, 176, 0.8);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.3s;
+        }
+        .play-icon::after { content: ''; display: block; border-left: 15px solid #fff; border-top: 10px solid transparent; border-bottom: 10px solid transparent; margin-left: 5px; }
+        .video-card:hover .play-icon { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+
+        .card-info { padding: 15px 20px; }
+        .card-info h4 { color: #fff; font-size: 16px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-info p { color: var(--accent); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        footer { padding: 60px; text-align: center; font-size: 13px; letter-spacing: 2px; opacity: 0.3; }
+
+        @media (max-width: 768px) {
+            header { padding: 0 30px; }
+            .menu { display: block; }
+            nav ul { position: fixed; top: 0; right: -100%; width: 100%; height: 100vh; background: var(--bg-dark); flex-direction: column; justify-content: center; align-items: center; transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); z-index: 1000; }
+            nav ul.show { right: 0; }
+            .main-player-wrapper { padding: 5px; border-radius: 12px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="follower-ball"></div>
+
+    <div class="shell">
+        <header>
+            <a href="../" class="logo-link">
+                <div class="logo-img-box"><img src="../images/logo_w.png" alt="Logo" style="width:100%; height:100%; object-fit:cover;"></div>
+                <h1>星崔AI</h1>
+            </a>
+            <button class="menu" aria-label="開啟選單">&#9776;</button>
+            <nav>
+                <ul id="nav-menu">
+                    <li><a href="../download/">安裝教學</a></li>
+                    <li><a href="../introduce/">軟體介紹</a></li>
+                    <li><a href="#" class="active">影音教學</a></li>
+                    <li><a href="../about/">關於我們</a></li>
+                    <li id="auth-link-container"><a href="../login/" id="auth-link">登入</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <div class="page-title">
+                <h2>影音教學中心</h2>
+                <p>System Operation Guide & Video Tutorials</p>
+            </div>
+
+            <!-- 主播放器區塊 -->
+            <div class="main-player-wrapper">
+                <div class="video-container">
+                    <!-- 預設播放的影片 (src 裡的 dQw4w9WgXcQ 換成你的 Youtube 影片 ID) -->
+                    <iframe id="main-player" 
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0" 
+                        title="YouTube video player" frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+
+            <div class="now-playing-info">
+                <h3 id="video-title">星崔 AI：快速上手與系統安裝指南</h3>
+                <p id="video-desc">在這支影片中，我們將帶您了解如何下載並安裝星崔 AI 桌面端軟體，以及如何進行初次的鏡頭高度配置與環境光線設定，確保 AI 模型能最精確地捕捉您的骨架節點。</p>
+            </div>
+
+            <!-- 互動式播放清單 -->
+            <h3 class="playlist-title">更多教學影片</h3>
+            <div class="playlist-grid">
+                
+                <!-- 影片卡片 1 -->
+                <!-- onClick 的參數對應: 'YouTube的ID', '影片標題', '影片簡介' -->
+                <div class="video-card" onclick="changeVideo('dQw4w9WgXcQ', '星崔 AI：快速上手與系統安裝指南', '在這支影片中，我們將帶您了解如何下載並安裝星崔 AI 桌面端軟體，以及如何進行初次的鏡頭高度配置與環境光線設定。')">
+                    <div class="card-thumbnail">
+                        <!-- 使用 YouTube 縮圖 API (將 dQw4w9WgXcQ 換成你的 ID) -->
+                        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" alt="thumbnail">
+                        <div class="play-icon"></div>
+                    </div>
+                    <div class="card-info">
+                        <h4>快速上手與系統安裝指南</h4>
+                        <p>初次使用的基本設定與安裝流程示範。</p>
+                    </div>
+                </div>
+
+                <!-- 影片卡片 2 -->
+                <div class="video-card" onclick="changeVideo('jfKfPfyJRdk', '深入解析：正面偵測模式操作', '正面模式專注於偵測您是否有高低肩的情況。此影片將教您如何調整坐姿以符合系統標準，並解讀 CPH 頻率指標。')">
+                    <div class="card-thumbnail">
+                        <img src="https://img.youtube.com/vi/jfKfPfyJRdk/maxresdefault.jpg" alt="thumbnail">
+                        <div class="play-icon"></div>
+                    </div>
+                    <div class="card-info">
+                        <h4>深入解析：正面偵測模式操作</h4>
+                        <p>高低肩偵測原理與數據解讀方式。</p>
+                    </div>
+                </div>
+
+                <!-- 影片卡片 3 -->
+                <div class="video-card" onclick="changeVideo('L_jWHffIx5E', '預防頸椎病：側身偵測模式應用', '探討如何利用側身模式追蹤 CVA 角，有效防止「烏龜頸」現象，並在辦公時保持最佳的頭頸脊椎排列。')">
+                    <div class="card-thumbnail">
+                        <img src="https://img.youtube.com/vi/L_jWHffIx5E/maxresdefault.jpg" alt="thumbnail">
+                        <div class="play-icon"></div>
+                    </div>
+                    <div class="card-info">
+                        <h4>預防頸椎病：側身偵測模式應用</h4>
+                        <p>透過 CVA 角度判定烏龜頸的科學原理。</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer>
+            <p>&copy; 2026 - <script>document.write(new Date().getFullYear())</script> The Sentry AI All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Firebase 邏輯 (維持同步導覽列按鈕) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtbjdi-x3E3eNgX8WvBtgibOTRG4idny4",
+            authDomain: "workai-1d692.firebaseapp.com",
+            projectId: "workai-1d692",
+            storageBucket: "workai-1d692.firebasestorage.app",
+            messagingSenderId: "156453625217",
+            appId: "1:156453625217:web:7ef3a3642481c52449dc80"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const authLink = document.getElementById('auth-link');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authLink.innerText = "儀錶板";
+                authLink.href = "../dashboard/";
+            } else {
+                authLink.innerText = "登入";
+                authLink.href = "../login/";
+            }
+        });
+    </script>
+
+    <!-- UI 互動腳本 -->
+    <script>
+        // 🌟 點擊更換影片與標題的魔法函數
+        function changeVideo(youtubeId, title, desc) {
+            const player = document.getElementById('main-player');
+            // 加入 ?autoplay=1 讓影片切換後自動播放
+            player.src = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`;
+            
+            // 更新文字資訊
+            document.getElementById('video-title').textContent = title;
+            document.getElementById('video-desc').textContent = desc;
+
+            // 平滑滾動到網頁最上方，讓主螢幕置中
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 手機版漢堡選單
+            const menuBtn = document.querySelector('.menu');
+            const navMenu = document.getElementById('nav-menu');
+            if (menuBtn && navMenu) {
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('show');
+                });
+                document.addEventListener('click', (e) => {
+                    if (navMenu.classList.contains('show') && !navMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                        navMenu.classList.remove('show');
+                    }
+                });
+            }
+
+            // 絲滑鼠標球
+            const ball = document.getElementById('follower-ball');
+            let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2, ballX = mouseX, ballY = mouseY;
+            document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+            function animateBall() {
+                ballX += (mouseX - ballX) * 0.12; ballY += (mouseY - ballY) * 0.12;
+                ball.style.transform = `translate(${ballX - 9}px, ${ballY - 9}px)`;
+                requestAnimationFrame(animateBall);
+            }
+            animateBall();
+        });
+    </script>
+</body>
+</html>
